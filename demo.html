@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Demo</title>
+  
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  
+  
+  
+  <script type="text/javascript" src="stream.js"></script>
+  
+ 
+  
+
+    
+  
+  <style type='text/css'>
+    .validation_failed{
+	background-color: #ffeeee;
+	}
+</style>
+  
+
+
+<script type='text/javascript'>
+  $(window).load(function(){
+      var original = [1,2,3,4,5,6,7,8,9,10];
+      var stream = (new Stream()).stream(original);
+      //console.log("toArray1: " + stream.filter(function(x) {return x <= 10;}).take(2).toArray());
+      //console.log("toArray1: " + stream.map(function(v){ return v * 5;}).filter(function(x) {return x <= 30;}).take(3).toArray());
+      //console.log("toArray1: " + stream.filter(function(x) {return x > 10;}));
+      
+      //console.log("toArray1: " + stream.map(function(v){ return v * 1;}).filter(function(x) {return x <= 10;}).take(2).toArray());
+      //console.log("toArray1: " + stream.map(function(v){ return v * 5;}).take(2).toArray());
+      //console.log("original: " + original);
+      
+      var numbersFrom2 = new Stream().generate(2, function(seed){ return seed + 1;});
+      console.log("all numbers from 2: " + numbersFrom2.take(10).toArray());
+      console.log(numbersFrom2.head());
+      console.log(numbersFrom2.tail());
+            
+      
+      console.log(new Stream().generateFromStream(numbersFrom2, function(stream){ 
+          return stream.tail().filter(function(x){ return x % stream.head() !== 0;});})
+              .take(100)
+              .toArray());
+
+    
+  });
+</script>
+
+</head>
+<body>
+  Demo title
+
+  
+</body>
+
+
+</html>
+
+
