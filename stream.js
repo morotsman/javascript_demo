@@ -108,6 +108,31 @@ function Stream(){
         }
     };
     
+    this.foldLeft = function(initial, fun){
+      if(this.isEmpty){
+          return initial;
+      }else{
+          return this.tail().foldLeft(fun(initial, this.head()), fun);
+      }  
+    };
+    
+    this.foldRight = function(initial, fun){
+      if(this.isEmpty){
+          return initial;
+      }else{
+          return fun(this.tail().foldRight(initial, fun), this.head());
+      }  
+    };
+    
+    this.forEach = function(fun){
+      if(this.isEmpty){
+        return;   
+      }else{
+        fun(this.head());
+        this.tail().forEach(fun);
+      }  
+    };
+    
     this.toArray = function(){
         var loop = function(s, acc){
             if(s.isEmpty){

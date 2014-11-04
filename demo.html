@@ -25,34 +25,29 @@
 
 <script type='text/javascript'>
   $(window).load(function(){
-      var original = [1,2,3,4,5,6,7,8,9,10];
-      var stream = (new Stream()).stream(original);
-      //console.log("toArray1: " + stream.filter(function(x) {return x <= 10;}).take(2).toArray());
-      //console.log("toArray1: " + stream.map(function(v){ return v * 5;}).filter(function(x) {return x <= 30;}).take(3).toArray());
-      //console.log("toArray1: " + stream.filter(function(x) {return x > 10;}));
-      
-      //console.log("toArray1: " + stream.map(function(v){ return v * 1;}).filter(function(x) {return x <= 10;}).take(2).toArray());
-      //console.log("toArray1: " + stream.map(function(v){ return v * 5;}).take(2).toArray());
-      //console.log("original: " + original);
+
       
       var primes = function(){
          var numbersFrom2 = new Stream().generate(2, function(seed){ return seed + 1;}); 
-         return new Stream().generateFromStream(numbersFrom2, function(stream){ 
-          return stream.tail().filter(function(x){ return x % stream.head() !== 0;});});
+        
+         return new Stream().generateFromStream(numbersFrom2, function(stream){ return stream.tail().filter(function(x){ return x % stream.head() !== 0;});});
       };
-      console.log(primes().take(100).toArray());
       
-      var myStream = stream.map(function(x){  console.log("map: " + x);return x*10;});
-      console.log("toArray1: " + myStream.take(5).toArray());
-      console.log("toArray2: " + myStream.take(10).toArray());
-      console.log("toArray3: " + myStream.toArray());
-    
+      $container = $("#container");
+      primes()
+          .take(500)
+          .map(function(prime){ return "<p>" + prime + "</p>"; })
+          .forEach(function(element){$container.append(element);});
+  
+      
+      
   });
 </script>
 
 </head>
 <body>
-  Demo title
+  Demo
+  <div id="container"></div>
 
   
 </body>
