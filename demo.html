@@ -35,17 +35,17 @@
       //console.log("toArray1: " + stream.map(function(v){ return v * 5;}).take(2).toArray());
       //console.log("original: " + original);
       
-      var numbersFrom2 = new Stream().generate(2, function(seed){ return seed + 1;});
-      console.log("all numbers from 2: " + numbersFrom2.take(10).toArray());
-      console.log(numbersFrom2.head());
-      console.log(numbersFrom2.tail());
-            
+      var primes = function(){
+         var numbersFrom2 = new Stream().generate(2, function(seed){ return seed + 1;}); 
+         return new Stream().generateFromStream(numbersFrom2, function(stream){ 
+          return stream.tail().filter(function(x){ return x % stream.head() !== 0;});});
+      };
+      console.log(primes().take(100).toArray());
       
-      console.log(new Stream().generateFromStream(numbersFrom2, function(stream){ 
-          return stream.tail().filter(function(x){ return x % stream.head() !== 0;});})
-              .take(100)
-              .toArray());
-
+      var myStream = stream.map(function(x){  console.log("map: " + x);return x*10;});
+      console.log("toArray1: " + myStream.take(5).toArray());
+      console.log("toArray2: " + myStream.take(10).toArray());
+      console.log("toArray3: " + myStream.toArray());
     
   });
 </script>

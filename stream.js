@@ -9,6 +9,10 @@ function Stream(){
       };
     }; 
     
+    var isFunction = function(obj) {
+       return !!(obj && obj.constructor && obj.call && obj.apply);
+    };
+    
     var cons = function(head, tail){
         var result = new Stream();
         result._head = head;
@@ -18,7 +22,10 @@ function Stream(){
           return result._head;  
         };
         result.tail = function(){
-            return result._tail();
+            if(isFunction(result._tail)){
+              result._tail = result._tail();
+            }
+            return result._tail;
         };
         return result;
     };
@@ -115,13 +122,7 @@ function Stream(){
         return loop(this, new Array());
     };
     
-    this.Cons = function(head, tail){
-        return cons(head,tail);
-    };
-    
-    this.Empty = function(){
-        return empty();
-    };
+
     
     
         
