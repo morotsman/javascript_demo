@@ -94,6 +94,15 @@ function Stream(){
         }
     };
     
+    this.takeWhile = function(predicate){
+        if(this.isEmpty || !predicate(this.head()) ){
+            return empty();
+        }else{
+            var that = this;
+            return cons(this.head(), lazy(function() { return that.tail().takeWhile(predicate);}));  
+        }
+    };
+    
     this.filter = function(predicate){
         if(this.isEmpty){
             return empty();
@@ -131,6 +140,15 @@ function Stream(){
         fun(this.head());
         this.tail().forEach(fun);
       }  
+    };
+    
+    this.zip = function(stream){
+        if(this.isEmpty || stream.isEmpty){
+            return empty();
+        }else{
+            var that = this;
+            return cons({one: this.head(), two: stream.head()}, lazy(function(){ return that.tail().zip(stream.tail()); }));
+        }
     };
     
     this.toArray = function(){

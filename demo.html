@@ -9,7 +9,7 @@
   
   
   <script type="text/javascript" src="stream.js"></script>
-  
+  <script type="text/javascript" src="timer.js"></script>
  
   
 
@@ -25,29 +25,90 @@
 
 <script type='text/javascript'>
   $(window).load(function(){
-
       
-      var primes = function(){
-         var numbersFrom2 = new Stream().generate(2, function(seed){ return seed + 1;}); 
-        
-         return new Stream().generateFromStream(numbersFrom2, function(stream){ return stream.tail().filter(function(x){ return x % stream.head() !== 0;});});
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
+      ctx.font = "30px Arial";
+
+
+      var positiveNumbers = new Stream().generate(1, function(seed){ return seed + 1;});
+      
+      var primes = new Stream()
+              .generateFromStream(positiveNumbers.tail(), function(stream){ return stream.tail().filter(function(x){ return x % stream.head() !== 0;});});
+
+      var letters = ["D","E","M","O"," ","Z","E","I","T"];
+      var letterStream = new Stream()
+              .generate(0, function(seed){ return seed+1===letters.length?0:seed+1;})
+              .map(function(i){
+                  return letters[i];
+              });   
+      
+      var randomStream = function(low, high){
+        return new Stream().generate(0, function(seed){ return Math.floor((Math.random() * high) + low);});
       };
       
-      $container = $("#container");
-      primes()
-          .take(500)
-          .map(function(prime){ return "<p>" + prime + "</p>"; })
-          .forEach(function(element){$container.append(element);});
-  
+      var randomPositions = 
+              randomStream(0,1400)
+              .zip(randomStream(30,500))
+              .map(function(v){ return {x: v.one, y: v.two};});
       
+      
+      var primesWithPosition = primes
+          .zip(randomPositions.tail())
+          .map(function(v){ return {prime: v.one, x: v.two.x, y: v.two.y};});
+  
+      var primesWithPositionAndTime = 
+              positiveNumbers
+              .zip(primesWithPosition)
+              .map(function(v){ return {time: v.one*500, prime: v.two.prime, x: v.two.x, y: v.two.y};})
+              .take(1000);
+      
+      var start = new Date().getTime();
+      timers.add(function(){
+           ctx.clearRect(0, 0, canvas.width, canvas.height);
+           
+           var now = new Date().getTime();        
+           primesWithPositionAndTime
+                   .takeWhile(function(v){
+                       return v.time < (now-start);
+                   })
+                   .filter(function(v){
+                       return (v.time + 5000) > (now - start);
+                   })
+                   .forEach(function(v){
+                       var alpha = ((now-(start+v.time))%5000)/1000;
+                       ctx.fillStyle = "rgba(255, 0, 0, " + alpha/5 + ")";
+                       ctx.fillText(v.prime, v.x, v.y);  
+                   });
+                   
+           primesWithPositionAndTime
+                   .zip(letterStream)
+                   .take(letters.length)
+                   .takeWhile(function(v){
+                       return (v.one.time+5000) < (now-start);
+                   })
+                   .filter(function(v){
+                       return (v.one.time + 10000) > (now - start);
+                   })
+                   .forEach(function(v){
+                       var alpha = ((now-(start+v.one.time))%5000)/1000;
+                       ctx.fillStyle = "rgba(255, 0, 0, " + alpha/5 + ")";
+                       ctx.fillText(v.two, v.one.x, v.one.y);  
+                   });                   
+
+      });
+      
+
+      
+      timers.start();
       
   });
 </script>
 
 </head>
 <body>
-  Demo
-  <div id="container"></div>
+  
+  <canvas id="myCanvas" width="1500" height="600"></canvas>
 
   
 </body>
