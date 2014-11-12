@@ -7,7 +7,7 @@ var timers = {
     timers: [],
     
     add: function(fun){
-      this.timers.push(fun);
+      this.timers.push({fun: fun, startTime: new Date().getTime()});
     },
            
     start: function(){
@@ -16,7 +16,8 @@ var timers = {
       (function runNext(){
         if(timers.timers.length > 0){
             for(var i = 0; i < timers.timers.length; i++){
-                if(timers.timers[i]() === false){
+                var timer = timers.timers[i];
+                if(timer.fun(timer.startTime) === false){
                     timers.timers.splice(i,1);
                     i--;
                 }

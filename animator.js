@@ -1,14 +1,13 @@
-var TextAnimator = (function() {
+var AnimatorTemplate = (function() {
 
     var getOrDefault = function(value, defaultValue) {
         return value === undefined ? defaultValue : value;
     };
 
-    function TextAnimator(_config) {
+    function AnimatorTemplate(_config) {
         var canvas = _config.canvas;
         var context = getOrDefault(_config.context, canvas.getContext("2d"));
         var animations = getOrDefault(_config.animations, new List([]));
-        var started = getOrDefault(_config.started, false);
         var loop = getOrDefault(_config.loop, false);
 
         var copyConfig = function() {
@@ -16,7 +15,6 @@ var TextAnimator = (function() {
                 canvas: canvas,
                 context: context,
                 animations: animations,
-                started: started,
                 loop: loop
             };
         };
@@ -24,7 +22,7 @@ var TextAnimator = (function() {
         this.loop = function() {
             var copyOfConfig = copyConfig();
             copyOfConfig.loop = true;
-            return new TextAnimator(copyOfConfig);
+            return new AnimatorTemplate(copyOfConfig);
         };
 
         this.animate = function(fun) {
@@ -32,108 +30,80 @@ var TextAnimator = (function() {
             var newAnimations = animations.Cons(animation);
             var copyOfConfig = copyConfig();
             copyOfConfig.animations = newAnimations;
-            return new TextAnimator(copyOfConfig);
+            return new AnimatorTemplate(copyOfConfig);
         };
+       
 
-        this.start = function() {
-            var copyOfConfig = copyConfig();
-            copyOfConfig.started = true;
-            return new TextAnimator(copyOfConfig);
+        this.create = function() {
+             var stopTime = animations.foldLeft(0, function(acc, animation) {
+                return Math.max(acc, animation.getStartTime() + animation.getDuration());
+            });           
+            
+            return new Animator(stopTime, animations, context, canvas,loop);
         };
-
-        this.stop = function() {
-            var copyOfConfig = copyConfig();
-            copyOfConfig.started = false;
-            return new TextAnimator(copyOfConfig);
+    };
+    
+    function Animator(stopTime, animations,context,canvas,loop){
+        var requestAnimationFrame = window.requestAnimationFram ||
+                                    window.mozRequestAnimationFrame ||
+                                    window.webkitRequestAnimationFrame ||
+                                    window.msRequestAnimationFrame;
+                            
+        var cancelAnimationFrame = window.cancelAnimationFram ||
+                                   window.mozCancelAnimationFrame ||
+                                   window.webkitCancelAnimationFrame ||
+                                   window.msCancelAnimationFrame;                           
+        
+        var requestId;
+     
+        
+        this.stop = function(){
+            cancelAnimationFrame(requestId);
         };
-
-
-        this.create = function(startTime) {
-
+        
+        this.start = function(){
             var stopTime = animations.foldLeft(0, function(acc, animation) {
                 return Math.max(acc, animation.getStartTime() + animation.getDuration());
             });
-
-            return function() {
-                var now = new Date().getTime();
+            var loopTime;
+            var startTime;
+            
+            var hasStated = function(timeFromStart, startTime){
+               return timeFromStart > startTime; 
+            };
+            
+            var hasStoped = function(timeFromStart, startTime, duration){
+               return timeFromStart > (startTime + duration); 
+            };
+            
+            var runner =  function(now) {
+                startTime = startTime===undefined?new Date().getTime():startTime;
+                startTime = loopTime===undefined?startTime:loopTime;
+                
                 var timeFromStart = now - startTime;
                 context.clearRect(0, 0, canvas.width, canvas.height);
-
-                animations
-                        .filter(function(animation) {
-
-                    return (timeFromStart > animation.getStartTime()) && (timeFromStart < (animation.getStartTime() + animation.getDuration()));
+               
+                animations.filter(function(animation) {
+                    return hasStated(timeFromStart, animation.getStartTime()) && !hasStoped(timeFromStart, animation.getStartTime(), animation.getDuration());
                 }).forEach(function(animation) {
                     var prop = animation.apply(timeFromStart);
                     if (prop !== undefined) {
-
-
                         context.font = prop.scale + "px " + prop.font;
                         context.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
                         context.fillText(prop.subject, prop.x, prop.y);
                     }
 
                 });
-                if (timeFromStart > stopTime) {
-                    if (loop) {
-                        startTime = new Date().getTime();
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return true;
-                }
+                if ((timeFromStart > stopTime) && loop) {
+                    mutableAnimations = animations;
+                    loopTime = new Date().getTime();
+                } 
+                requestId = requestAnimationFrame(runner);
             };
+            requestId = requestAnimationFrame(runner);
         };
-
-
-        var init = function() {
-            if (started === true) {
-                var startTime = new Date().getTime();
-                var stopTime = animations.foldLeft(0, function(acc, animation) {
-                    return Math.max(acc, animation.getStartTime() + animation.getDuration());
-                });
-
-
-                timers.add(function() {
-                    var now = new Date().getTime();
-                    var timeFromStart = now - startTime;
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-
-                    animations
-                            .filter(function(animation) {
-
-                        return (timeFromStart > animation.getStartTime()) && (timeFromStart < (animation.getStartTime() + animation.getDuration()));
-                    }).forEach(function(animation) {
-                        var prop = animation.apply(timeFromStart);
-                        if (prop !== undefined) {
-
-
-                            context.font = prop.scale + "px " + prop.font;
-                            context.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
-                            context.fillText(prop.subject, prop.x, prop.y);
-                        }
-
-                    });
-                    if (timeFromStart > stopTime) {
-                        if (loop) {
-                            startTime = new Date().getTime();
-                        } else {
-                            return false;
-                        }
-                    } else {
-                        return true;
-                    }
-                });
-            }
-
-        };
-
-        init();
-
-
-    }
-    ;
+        
+    };
 
     function TextAnimation(_config) {
 
@@ -185,23 +155,10 @@ var TextAnimator = (function() {
             return new TextAnimation(copyOfConfig);
         };
 
-        var copyOfProperties = function(properties) {
-            return {
-                subject: properties.subject,
-                x: properties.x,
-                y: properties.y,
-                scale: properties.scale,
-                alpha: properties.alpha,
-                font: properties.font
-            };
-        };
-
-
         var linearImpl = function(property, startTime, duration, from, to) {
             return function(properties, timeFromStart) {
-                var result = copyOfProperties(properties);
-                result[property] = from + (to - from) * ((timeFromStart - startTime) / (duration));
-                return result;
+                properties[property] = from + (to - from) * ((timeFromStart - startTime) / (duration));
+                return properties;
             };
         };
 
@@ -272,6 +229,6 @@ var TextAnimator = (function() {
     }
 
 
-    return TextAnimator;
+    return AnimatorTemplate;
 }());
 
