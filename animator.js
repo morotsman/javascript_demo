@@ -80,9 +80,6 @@ var AnimatorTemplate = (function() {
                 }).forEach(function(animation) {
                     var prop = animation.apply(timeFromStart);
                     if (prop !== undefined) {
-                        if(prop.scale === undefined || prop.fontSize === undefined || prop.font === undefined){
-                            console.log("hepp");
-                        }
                         context.font = prop.scale*prop.fontSize + "px " + prop.font;
                         context.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
                         context.fillText(prop.subject, prop.x, prop.y);
@@ -160,20 +157,15 @@ var AnimatorTemplate = (function() {
         var linearImpl = function(property, startTime, duration, from, to) {
             return function(properties, timeFromStart) {
                 var distance = (to - from) * ((timeFromStart - startTime) / (duration));
-                //console.log("linear" + distance)
                 properties[property] = from + distance;
                 return properties;
             };
         };
         
         var fallingImpl = function(property, startTime, duration, from, to) {
-            //distance formula : d = 0.5 * g * t^2
-            //g = 2*d/t^2
             var gravity = 2*(to-from)/Math.pow(duration,2);
-            console.log(gravity);
             return function(properties, timeFromStart) {
                 var distance = 0.5*gravity*Math.pow(timeFromStart-startTime,2);
-                //console.log("falling" + distance);
                 properties[property] = from + distance;
                 return properties;
             };
