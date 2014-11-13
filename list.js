@@ -82,6 +82,14 @@ function List(_source){
             return cons(head,this);  
         };
         
+        this.length = function(){
+          if(this.isEmpty){
+              return 0;
+          }else{
+              return 1 + this.tail().length();
+          }  
+        };
+        
     };
     
     var result = new ArrayList();
