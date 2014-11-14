@@ -32,69 +32,16 @@ var AnimatorTemplate = (function() {
             copyOfConfig.animations = newAnimations;
             return new AnimatorTemplate(copyOfConfig);
         };
-       
+
 
         this.create = function() {
-          
-            
-            return new Animator(animations, context, canvas,loop);
-        };
-    };
-    
-    function Animator(animations,context,canvas,loop){
-        var requestAnimationFrame = window.requestAnimationFram ||
-                                    window.mozRequestAnimationFrame ||
-                                    window.webkitRequestAnimationFrame ||
-                                    window.msRequestAnimationFrame;
-                            
-        var cancelAnimationFrame = window.cancelAnimationFram ||
-                                   window.mozCancelAnimationFrame ||
-                                   window.webkitCancelAnimationFrame ||
-                                   window.msCancelAnimationFrame;                           
-        
-        var requestId;
-     
-        
-        this.stop = function(){
-            cancelAnimationFrame(requestId);
-            context.clearRect(0, 0, canvas.width, canvas.height);
-        };
-        
-        this.start = function(){
-            var stopTime = animations.foldLeft(0, function(acc, animation) {
-                return Math.max(acc, animation.getStopTime());
-            });
-            var loopTime;
-            var startTime;
-            
-            
-            var runner =  function(now) {
-                startTime = startTime===undefined?new Date().getTime():startTime;
-                startTime = loopTime===undefined?startTime:loopTime;
-                
-                var timeFromStart = now - startTime;
-                context.clearRect(0, 0, canvas.width, canvas.height);
-               
-                animations.filter(function(animation) {
-                    return (timeFromStart > animation.getStartTime()) && !(timeFromStart > animation.getStopTime());
-                }).forEach(function(animation) {
-                    var prop = animation.apply(timeFromStart);
-                    if (prop !== undefined) {
-                        context.font = prop.scale*prop.fontSize + "px " + prop.font;
-                        context.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
-                        context.fillText(prop.subject, prop.x, prop.y);
-                    }
 
-                });
-                if ((timeFromStart > stopTime) && loop) {
-                    loopTime = new Date().getTime();
-                } 
-                requestId = requestAnimationFrame(runner);
-            };
-            requestId = requestAnimationFrame(runner);
+
+            return new Animator(animations, context, canvas, loop);
         };
-        
-    };
+    }
+    ;
+
 
     function TextAnimation(_config) {
 
@@ -129,12 +76,12 @@ var AnimatorTemplate = (function() {
             copyOfConfig.font = font;
             return new TextAnimation(copyOfConfig);
         };
-        
+
         this.fontSize = function(fontSize) {
             var copyOfConfig = copyConfig();
             copyOfConfig.fontSize = fontSize;
             return new TextAnimation(copyOfConfig);
-        };        
+        };
 
         this.alpha = function(alpha) {
             var copyOfConfig = copyConfig();
@@ -154,36 +101,41 @@ var AnimatorTemplate = (function() {
             return new TextAnimation(copyOfConfig);
         };
 
-        var linearImpl = function(property, startTime, duration, from, to) {
+        var linearImpl = function(property, settings) {
             return function(properties, timeFromStart) {
-                var distance = (to - from) * ((timeFromStart - startTime) / (duration));
-                properties[property] = from + distance;
+                var distance = (settings.to - settings.from) * ((timeFromStart - settings.startTime) / (settings.duration));
+                properties[property] = settings.from + distance;
                 return properties;
             };
         };
         
-        var fallingImpl = function(property, startTime, duration, from, to) {
-            var gravity = 2*(to-from)/Math.pow(duration,2);
+        var fallingImpl = function(property, settings) {
+            var gravity = settings.gravity!==undefined?settings.gravity:2 * (settings.to - settings.from) / Math.pow(settings.duration, 2);
             return function(properties, timeFromStart) {
-                var distance = 0.5*gravity*Math.pow(timeFromStart-startTime,2);
-                properties[property] = from + distance;
+                var distance = 0.5 * gravity * Math.pow(timeFromStart - settings.startTime, 2);
+                properties[property] = settings.from + distance;
                 return properties;
             };
         };
-        
-        
-        var effectSelector = function(effect){
-            if(effect === "fall"){
+               
+
+
+        var effectSelector = function(effect) {
+            if (effect === "fall") {
                 return fallingImpl;
-            }else{
+            } else {
                 return linearImpl;
             }
         };
+        
+        
 
-        var effect = function(property, startTime, duration, from, to, effect) {
-            var selectedEffect = effectSelector(effect);
+        var effect = function(property, settings) {
+            var selectedEffect = effectSelector(settings.effectName);
+            var startTime = settings.startTime;
+            var duration = settings.duration;
             var newEffect = {
-                effect: selectedEffect(property, startTime, duration, from, to),
+                effect: selectedEffect(property, settings),
                 startTime: startTime,
                 duration: duration
             };
@@ -194,36 +146,44 @@ var AnimatorTemplate = (function() {
             return new TextAnimation(copyOfConfig);
         };
 
-        this.fade = function(startTime, duration, from, to, effectName) {
-            return effect("alpha", startTime, duration, from, to, effectName);
+
+
+        this.fade = function(settings) {
+            return effect("alpha", settings);
         };
 
 
-        this.scale = function(startTime, duration, from, to, effectName) {
-            return effect("scale", startTime, duration, from, to, effectName);
+        this.scale = function(settings) {
+            return effect("scale", settings);
         };
 
-        this.scrollX = function(startTime, duration, from, to, effectName) {
-            return effect("x", startTime, duration, from, to, effectName);
+        this.scrollX = function(settings) {
+            return effect("x", settings);
         };
 
-        this.scrollY = function(startTime, duration, from, to, effectName) {
-            return effect("y", startTime, duration, from, to, effectName);
+        this.scrollY = function(settings) {
+            return effect("y", settings);
         };
 
 
         this.getStartTime = function() {
             return startTime;
         };
-        
+
         this.getStopTime = function() {
             return stopTime;
         };
 
+        this.getDuration = function() {
+            return duration;
+        };
 
+        this.getEffects = function() {
+            return effects;
+        };
 
-        this.apply = function(timeFromStart) {
-            var originalProperties = {
+        this.getProperties = function() {
+            return {
                 subject: subject,
                 x: position.x,
                 y: position.y,
@@ -232,23 +192,134 @@ var AnimatorTemplate = (function() {
                 font: font,
                 fontSize: fontSize
             };
-            var inScopeEffects = effects
+        };
+        
+        this.copy = function(){
+            var copyOfConfig = copyConfig();
+            return new TextAnimation(copyOfConfig); 
+        };
+        
+
+
+    }
+
+    function Animator(animations, context, canvas, loop) {
+        var requestAnimationFrame = window.requestAnimationFram ||
+                window.mozRequestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.msRequestAnimationFrame;
+
+        var cancelAnimationFrame = window.cancelAnimationFram ||
+                window.mozCancelAnimationFrame ||
+                window.webkitCancelAnimationFrame ||
+                window.msCancelAnimationFrame;
+
+        var requestId;
+
+        this.apply = function(timeFromStart, animation) {
+            var properties = animation.oldProperties!==undefined?animation.oldProperties:animation.getProperties();
+            
+            animation.runtimeEffects = animation.runtimeEffects.filter(function(e){
+                return timeFromStart < (e.startTime + e.duration);
+            });
+            
+            //console.log("effects: " + animation.runtimeEffects.length);
+            
+            var inScopeEffects = animation.runtimeEffects
                     .filter(function(e) {
-                return (e.startTime < timeFromStart) && (timeFromStart < (e.startTime + e.duration));
+                return e.startTime < timeFromStart;
             });
 
-            if (!inScopeEffects.isEmpty) {
-                var modifiedProperties = inScopeEffects.foldLeft(originalProperties, function(acc, effect) {
-                    return effect.effect(acc, timeFromStart);
-                });
+            if (inScopeEffects.length!==0) {
+                var modifiedProperties = properties;
+                for(i = 0; i < inScopeEffects.length; i++){
+                    modifiedProperties = inScopeEffects[i].effect(modifiedProperties, timeFromStart);
+                }
+                
 
-
+                animation.oldProperties = modifiedProperties;
                 return modifiedProperties;
             }
 
         };
+        
+        this.createRuntimeAnimations = function(animations){
+            return animations.foldLeft(new Array(), function(acc, animation){
+                var copyOfAnimations = animation.copy();
+                
+                copyOfAnimations.runtimeEffects = animation.getEffects().foldLeft(new Array(), function(acc, effect){
+                    acc.push({
+                        effect: effect.effect,
+                        startTime: effect.startTime,
+                        duration: effect.duration
+                    });
+                    return acc;
+
+                });
+                
+                acc.push(copyOfAnimations);
+                return acc;
+            });
+        };
+
+        this.stop = function() {
+            cancelAnimationFrame(requestId);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        };
+             
+        this.start = function() {
+            var stopTime = animations.foldLeft(0, function(acc, animation) {
+                return Math.max(acc, animation.getStopTime());
+            });
+            var loopTime;
+            var startTime;
+            var that = this;
+            
+            var runtimeAnimationsArray = this.createRuntimeAnimations(animations);
+            var runner = function(now) {
+                startTime = startTime === undefined ? new Date().getTime() : startTime;
+                startTime = loopTime === undefined ? startTime : loopTime;
+
+                var timeFromStart = now - startTime;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                
+                
+                runtimeAnimationsArray = runtimeAnimationsArray.filter(function(animation){
+                    return !(timeFromStart > animation.getStopTime());
+                });
+                
+                //console.log("animations: " + runtimeAnimationsArray.length);
+
+                runtimeAnimationsArray.filter(function(animation){
+                    return (timeFromStart > animation.getStartTime());
+                }).forEach(function(animation) {
+                    var prop = that.apply(timeFromStart, animation);
+                    if (prop !== undefined) {                    
+                        context.font = prop.scale* prop.fontSize + "px " + prop.font;
+                        context.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
+                        context.fillText(prop.subject, prop.x, prop.y);
+                    }
+
+                });
+                if ((timeFromStart > stopTime)) {
+                    if(loop){
+                        loopTime = new Date().getTime();
+                        runtimeAnimationsArray = that.createRuntimeAnimations(animations);
+                    }else{
+                        //console.log("stop");
+                        return;
+                    }
+                }
+                
+                requestId = requestAnimationFrame(runner);
+            };
+            requestId = requestAnimationFrame(runner);
+        };
+       
+        
 
     }
+    ;
 
 
     return AnimatorTemplate;

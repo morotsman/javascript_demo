@@ -172,13 +172,15 @@
                                         .font("Arial")
                                         .fontSize(100)
                                         .position({x: v.x, y: v.y})                              
-                                        .fade(v.index * 500, 5000, 0, 1)
-                                        .fade(v.index * 500 + 5000, 5000, 1, 0)
-                                        .scale(v.index * 500, 10000, 0, 1, "fall");
-                                        //.scrollY(v.index * 500+9000, 1000, v.y, v.y+700, "fall");
+                                        .fade({startTime: v.index * 500, duration: 5000,from: 0,to: 1})
+                                        .fade({startTime: v.index * 500 + 5000, duration: 7000,from: 1, to: 0})
+                                        .scale({startTime: v.index * 500, duration: 10000,from: 0,to: 1, effectName: "fall"}) 
+                                        .scrollY({startTime: v.index * 500 + 7000, duration: 300,from: v.y,to: v.y+400, effectName: "fall"});
                                         
                             });
-                }).loop().create();
+                })
+                        .loop()
+                        .create();
                 
                 
                 var animatorTemplate2 = new AnimatorTemplate({canvas: canvas2});
@@ -190,9 +192,9 @@
                                         .font("Arial")
                                         .fontSize(50)
                                         .position({x: v.x, y: v.y})
-                                        .fade(v.index * 1000, 5000, 0, 1)
-                                        .scale(v.index * 1000, 10000, 0, 2)
-                                        .fade(v.index * 1000 + 5000, 5000, 1, 0);
+                                        .fade({startTime: v.index * 1000, duration: 5000,from: 0,to: 1})
+                                        .scale({startTime: v.index * 1000, duration: 10000,from: 0,to: 2})
+                                        .fade({startTime: v.index * 1000 + 5000, duration: 5000,from: 1,to: 0});
                             });
                 });  
                 
@@ -203,9 +205,9 @@
                                 .font("Arial")
                                 .fontSize(50)
                                 .position({x: v.x, y: v.y})
-                                .fade(v.index * 1000 + 15000, 5000, 0, 1)
-                                .scale(v.index * 1000 + 15000, 10000, 0, 2)
-                                .fade(v.index * 1000 + 20000, 5000, 1, 0);
+                                .fade({startTime: v.index * 1000 + 15000, duration: 5000,from: 0,to: 1})
+                                .scale({startTime: v.index * 1000 + 15000, duration: 10000,from: 0,to: 2})
+                                .fade({startTime: v.index * 1000 + 20000, duration: 5000,from: 1,to: 0});
                     });
                 }).animate(function(animation){
                     return animation
@@ -213,18 +215,18 @@
                             .position({x:100, y: 200})
                             .font("Arial")
                             .fontSize(80)
-                            .fade(19000, 9000, 0, 1)
-                            .scale(19000, 9000, 0, 1)
-                            .fade(28000, 60000, 1, 0);
+                            .fade({startTime: 19000, duration: 9000,from: 0,to: 1})
+                            .scale({startTime: 19000, duration: 9000,from: 0,to: 1})
+                            .fade({startTime: 28000, duration: 60000,from: 1,to: 0});
                 }).animate(function(animation){
                     return animation
                             .subject("MIT NIKLAS")
                             .position({x:100, y: 250})
                             .font("Arial")
                             .fontSize(40)
-                            .fade(21000, 7000, 0, 1)
-                            .scale(21000, 7000, 0, 1)
-                            .fade(28000, 60000, 1, 0);
+                            .fade({startTime: 21000, duration: 7000,from: 0,to: 1})
+                            .scale({startTime: 21000, duration: 7000,from: 0,to: 1})
+                            .fade({startTime: 28000, duration: 60000,from: 1,to: 0});                    
                             
                 });
                 
