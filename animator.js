@@ -117,11 +117,68 @@ var AnimatorTemplate = (function() {
                 return properties;
             };
         };
-               
-
+            
+        var heightWithBounce = function(gravity, initialVelocity,  time){
+            return initialVelocity*time + 0.5*gravity*Math.pow(time,2);    
+        };
+        
+        var impactVelocity = function(initialHeight,gravity){
+            return Math.sqrt(2*gravity*initialHeight);    
+        };  
+        
+        var maxHeightAfterBounce = function(cor, gravity, initialVelocity){
+            return Math.pow(initialVelocity,2)/(2*gravity);
+        }; 
+        
+        var getEffectId = function(){
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8); return v.toString(16);
+            }); 
+        }; 
+                
+        
+        //timeFromStart = tid sedan hela animationen startade
+        var bounceImpl = function(property, settings){
+            var gravity = settings.gravity;
+            var speed = settings.speed===undefined?1:settings.speed;
+            var cor = settings.cor!==undefined?settings.cor:0.5; 
+            var effectId = getEffectId();
+            
+            return function(properties, timeFromStart){
+                if(properties[effectId] !== undefined &&properties[effectId].stop){
+                    return properties;
+                }
+                if(properties[effectId]===undefined){
+                   properties[effectId] = {};
+                   properties[effectId].initialVelocity = 0; 
+                   properties[effectId].initialHeight = settings.to - settings.from;
+                   properties[effectId].bounceTime = settings.startTime; 
+                   properties[effectId].intialPosition = settings.from;
+                }
+                var time = (timeFromStart - properties[effectId].bounceTime)/1000*speed;
+                var fallDistance = heightWithBounce(gravity, properties[effectId].initialVelocity, time);
+                properties[property] = properties[effectId].intialPosition + fallDistance;
+                
+                //console.log((timeFromStart - properties[effectId].bounceTime) + " " + properties[property]);
+                
+                if((properties[effectId].intialPosition + fallDistance) > settings.to){
+                    properties[effectId].initialVelocity = -cor*impactVelocity(properties[effectId].initialHeight, gravity); 
+                    if(Math.abs(properties[effectId].initialVelocity) < 1){
+                       properties[effectId].stop = true; 
+                    }
+                    properties[effectId].initialHeight = maxHeightAfterBounce(cor, gravity, properties[effectId].initialVelocity);
+                    properties[effectId].bounceTime = timeFromStart;
+                    properties[effectId].intialPosition = settings.to;
+                }
+                
+                return properties;
+            };
+        };
 
         var effectSelector = function(effect) {
-            if (effect === "fall") {
+            if(effect === "bounce"){
+                return bounceImpl;    
+            }else if (effect === "fall") {
                 return fallingImpl;
             } else {
                 return linearImpl;
