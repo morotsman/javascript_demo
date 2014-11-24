@@ -142,6 +142,7 @@ var AnimatorTemplate = (function() {
             var gravity = settings.gravity;
             var speed = settings.speed===undefined?1:settings.speed;
             var cor = settings.cor!==undefined?settings.cor:0.5; 
+            var initialVelocity = getOrDefault(settings.initialVelocity, 0);
             var effectId = getEffectId();
             
             return function(properties, timeFromStart){
@@ -150,7 +151,7 @@ var AnimatorTemplate = (function() {
                 }
                 if(properties[effectId]===undefined){
                    properties[effectId] = {};
-                   properties[effectId].initialVelocity = 0; 
+                   properties[effectId].initialVelocity = initialVelocity; 
                    properties[effectId].initialHeight = settings.to - settings.from;
                    properties[effectId].bounceTime = settings.startTime; 
                    properties[effectId].intialPosition = settings.from;
@@ -158,8 +159,6 @@ var AnimatorTemplate = (function() {
                 var time = (timeFromStart - properties[effectId].bounceTime)/1000*speed;
                 var fallDistance = heightWithBounce(gravity, properties[effectId].initialVelocity, time);
                 properties[property] = properties[effectId].intialPosition + fallDistance;
-                
-                //console.log((timeFromStart - properties[effectId].bounceTime) + " " + properties[property]);
                 
                 if((properties[effectId].intialPosition + fallDistance) > settings.to){
                     properties[effectId].initialVelocity = -cor*impactVelocity(properties[effectId].initialHeight, gravity); 
@@ -174,9 +173,47 @@ var AnimatorTemplate = (function() {
                 return properties;
             };
         };
+        
+        var jumpImpl = function(property, settings){
+            var gravity = settings.gravity;
+            var speed = settings.speed===undefined?1:settings.speed;
+            var cor = settings.cor!==undefined?settings.cor:0.5; 
+            var initialVelocity = getOrDefault(settings.initialVelocity, 0);
+            var effectId = getEffectId();
+            
+            return function(properties, timeFromStart){
+                if(properties[effectId] !== undefined &&properties[effectId].stop){
+                    return properties;
+                }
+                if(properties[effectId]===undefined){
+                   properties[effectId] = {};
+                   properties[effectId].initialVelocity = initialVelocity; 
+                   properties[effectId].initialHeight = maxHeightAfterBounce(cor, gravity, properties[effectId].initialVelocity);
+                   properties[effectId].bounceTime = settings.startTime; 
+                   properties[effectId].intialPosition = settings.from;
+                }
+                var time = (timeFromStart - properties[effectId].bounceTime)/1000*speed;
+                var fallDistance = heightWithBounce(gravity, properties[effectId].initialVelocity, time);
+                properties[property] = properties[effectId].intialPosition + fallDistance;
+                
+                if((properties[effectId].intialPosition + fallDistance) > settings.to){
+                    properties[effectId].initialVelocity = -cor*impactVelocity(properties[effectId].initialHeight, gravity); 
+                    if(Math.abs(properties[effectId].initialVelocity) < 1){
+                       properties[effectId].stop = true; 
+                    }
+                    properties[effectId].initialHeight = maxHeightAfterBounce(cor, gravity, properties[effectId].initialVelocity);
+                    properties[effectId].bounceTime = timeFromStart;
+                    properties[effectId].intialPosition = settings.to;
+                }
+                
+                return properties;
+            };
+        };        
 
         var effectSelector = function(effect) {
-            if(effect === "bounce"){
+            if(effect === "jump"){
+                return jumpImpl;    
+            }else if(effect === "bounce"){
                 return bounceImpl;    
             }else if (effect === "fall") {
                 return fallingImpl;

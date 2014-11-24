@@ -164,20 +164,21 @@
 
                 var animatorTemplate1 = new AnimatorTemplate({canvas: canvas1});
 
-                var animator1 = primesWithPositionAndIndex.take(200).foldLeft(animatorTemplate1, function(animator, v) {
+                var animator1 = primesWithPositionAndIndex.take(20).foldLeft(animatorTemplate1, function(animator, v) {
                     return animator.animate(
                             function(animation) {
                                 return animation
                                         .subject(v.word)
                                         .font("Arial")
-                                        .fontSize(100)
-                                        .position({x: v.x, y: v.y})                              
-                                        .fade({startTime: v.index * 500, duration: 5000,from: 0,to: 1, effectName:"bounce", gravity:9.21, speed:0.3, cor:0.7})
-                                        .fade({startTime: v.index * 500 + 5000, duration: 3000,from: 1, to: 0})
-                                        .scale({startTime: v.index * 500, duration: 5000,from: 0,to: 1,effectName: "bounce", gravity:9.81, speed:0.3, cor:0.7}) 
+                                        .fontSize(30)
+                                        .position({x: v.index*40+50, y: 100})                              
+                                        //.fade({startTime: v.index * 500 + 3000, duration: 5000,from: 0,to: 1, effectName:"bounce", gravity:9.21, speed:0.3, cor:0.7})
+                                        //.fade({startTime: v.index * 500 + 5000, duration: 3000,from: 1, to: 0})
+                                        //.scale({startTime: v.index * 500, duration: 5000,from: 0,to: 1,effectName: "bounce", gravity:9.81, speed:0.3, cor:0.7}) 
                                         //.scrollX({startTime: v.index * 500 + 5000, duration: 5000,from: v.x,to: v.x+200})
-                                        .scrollY({startTime: v.index * 500 + 5000 , duration: 15000,from: v.y,to: 590, effectName: "bounce", gravity:9.81, cor:0.5, speed:10})
-                                        //.fade({startTime: v.index * 500 + 5000, duration: 10000,from: 1, to: 0})
+                                        .scrollY({startTime: v.index * 50, duration: 5000,from: 100,to: 100, effectName: "jump", gravity:9.81, cor:0.2, speed:10, initialVelocity:-30})
+                                        //.scrollY({startTime: v.index * 100 + 5000, duration: 10000,from: 100,to: 100, effectName: "jump", gravity:19.81, cor:0.5, speed:10, initialVelocity:-40})
+                                        //.fade({startTime: v.index * 100, duration: 10000,from: 1, to: 0})
                                         
                             });
                 })
