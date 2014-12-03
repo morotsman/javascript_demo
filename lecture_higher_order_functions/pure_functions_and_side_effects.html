@@ -1,0 +1,62 @@
+<!doctype html>
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+
+    </head>
+
+
+    <body>
+        <div id="logger"> 
+        </div>
+
+
+
+
+
+        <script src="external/jquery.min.js"></script>
+        <script src="order_service.js"></script>
+        <script>
+            $(window).load(function () {
+
+                //function with side effect
+                var addAndDisplay = function (a, b) {
+                    var sum = a + b;
+                    $("#logger").append("<p>" + sum + "</p>");
+                };
+
+                addAndDisplay(2, 2);
+
+                //pure function
+                var add = function (a, b) {
+                    return a + b;
+                };
+
+                //function with side effect
+                var display = function (text) {
+                    $("#logger").append("<p>" + text + "</p>");
+                };
+
+                var errorDisplay = function (text) {
+                    $("#logger").append("<p style='color:red'>" + text + "</p>");
+                };
+
+                display(add(2, 2));
+
+                errorDisplay(add(2, 2));
+
+            });
+            
+        </script>
+
+
+
+
+
+    </body>
+</html>
+
+

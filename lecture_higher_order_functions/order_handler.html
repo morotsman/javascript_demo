@@ -1,0 +1,197 @@
+<!doctype html>
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+
+    </head>
+
+
+    <body>
+        <div id="logger"> 
+        </div>
+
+
+
+
+
+        <script src="external/jquery.min.js"></script>
+        <script src="services.js"></script>
+        <script>
+            $(window).load(function () {
+
+                var display = function (text) {
+                    $("#logger").append("<p>" + text + "</p>");
+                };
+
+                var errorDisplay = function (text) {
+                    $("#logger").append("<p style='color:red'>" + text + "</p>");
+                };
+
+
+
+                //the business logic is drowning in error handling logic, we are violating the SRP.
+                //could we handle error logic in separate function?
+                var internalOrder = function (order) {
+                    var bookResult;
+                    var confirmation;
+                    try {
+                        bookResult = orderService.book(order.numberOfItems);
+                    } catch (err) {
+                        errorDisplay(err);
+                        throw err;
+                    }
+                    if (bookResult.result === false) {
+                        return bookResult;
+                    }
+
+                    try {
+                        confirmation = orderService.finalize(bookResult.id);
+                    } catch (err) {
+                        errorDisplay(err);
+                        throw err;
+                    }
+
+                    return confirmation;
+                };
+
+                //display(internalOrder(order).message);
+
+                var externalOrder = function (order) {
+                    var bookResult;
+                    var confirmation;
+                    try {
+                        bookResult = orderService.book(order.numberOfItems);
+                    } catch (err) {
+                        errorDisplay(err);
+                        throw err;
+                    }
+                    if (bookResult.result === false) {
+                        return bookResult;
+                    }
+                    var creditResult = orderService.isCreditOk(order.name);
+                    if (creditResult.result === false) {
+                        return creditResult;
+                    }
+                    try {
+                        confirmation = orderService.finalize(bookResult.id, order.name);
+                    } catch (err) {
+                        errorDisplay(err);
+                        throw err;
+                    }
+                    return confirmation;
+                };
+
+
+                //display(externalOrder(order).message);
+
+
+                /********************************First refactory*******************************************/
+
+                //decorator pattern in combination with strategy pattern on functional level.
+                var errorHandler = function (fun, errorStrategy) {
+                    return function (/*arguments*/) {
+                        try {
+                            return fun.apply(this, arguments);
+                        } catch (err) {
+                            return errorStrategy(err);
+                        }
+                    };
+                };
+
+                var displayAndThrowStrategy = function (err) {
+                    errorDisplay(err);
+                    throw err;
+                };
+
+                var statusStrategy = function (message) {
+                    return function (err) {
+                        return {result: false, message: message + " due to: " + err};
+                    };
+                };
+
+                //var myBook = errorHandler(orderService.book, displayAndThrowStrategy);
+                //var myFinalize = errorHandler(orderService.finalize, displayAndThrowStrategy);
+                var myBook = errorHandler(orderService.book, statusStrategy("Could not book "));
+                var myFinalize = errorHandler(orderService.finalize, statusStrategy("Could not finalize "));
+
+                var internalOrder_2 = function (order) {
+                    var bookResult = myBook(order.numberOfItems);
+                    if (bookResult.result === false) {
+                        return bookResult;
+                    }
+                    return myFinalize(bookResult.id);
+                };
+
+
+                //display(internalOrder_2(order).message);
+
+                var externalOrder_2 = function (order) {
+                    var bookResult = myBook(order.numberOfItems);
+                    if (bookResult.result === false) {
+                        return bookResult;
+                    }
+                    var creditResult = orderService.isCreditOk(order.name);
+                    if (creditResult.result === false) {
+                        return creditResult;
+                    }
+                    return myFinalize(bookResult.id, "Niklas");
+
+                };
+
+                var order = {
+                    numberOfItems: 50,
+                    name: "Niklas"
+                };
+                display(externalOrder_2(order).message);
+
+                /*****************************************************second refactory************************/
+
+                var orderProcess = function (creditStrategy) {
+                    return function (order) {
+                        var bookResult = myBook(order.numberOfItems);
+                        if (bookResult.result === false) {
+                            return bookResult;
+                        }
+                        var creditResult = creditStrategy(order);
+                        if (creditResult.result === false) {
+                            return creditResult;
+                        }
+                        return myFinalize(bookResult.id);
+                    };
+                };
+
+                var noCreditCheckStrategy = function () {
+                    return {result: true};
+                };
+
+                var internalOrder_3 = function (order) {
+                    return orderProcess(noCreditCheckStrategy)(order);
+                };
+
+                var creditCheckStrategy = function (order) {
+                    return orderService.isCreditOk(order.name);
+                };
+
+                var externalOrder_3 = function (order) {
+                    return orderProcess(creditCheckStrategy)(order);
+                };
+
+
+                //display(internalOrder_3(order).message);
+                //display(externalOrder_3(order).message);
+
+            });
+            
+        </script>
+
+
+
+
+
+    </body>
+</html>
+
+

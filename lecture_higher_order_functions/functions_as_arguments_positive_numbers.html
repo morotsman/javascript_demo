@@ -1,0 +1,147 @@
+<!doctype html>
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+
+    </head>
+
+
+    <body>
+        <div id="logger"> 
+        </div>
+
+
+
+
+
+        <script src="external/jquery.min.js"></script>
+        
+        <script>
+            $(window).load(function (){ 
+            
+                var display = function (text) {
+                    $("#logger").append("<p>" + text + "</p>");
+                };
+ 
+                var plus = function(a, b){
+                    return a + b;    
+                };
+                
+                var minus = function(a,b){
+                    return a - b; 
+                };
+                
+                var times = function(a,b){
+                    return a * b; 
+                };        
+        
+                //example
+                var runner = function(fun){
+                    fun("Exceuted by runner");
+                };
+                
+                runner(function(text){ 
+                    display(text);
+                });
+                
+                
+                var runner2 = function(input, fun){
+                    fun(input);
+                };
+                
+                
+                runner2("Input", display);
+                
+                
+                
+                
+                /*************Assignment 1: refactor the code so that the code duplication is removed***************/
+        
+                var positiveAdd = function(a, b){
+                    if(a < 0){
+                        throw a + " is not positive."; 
+                    }
+                    if(b < 0){
+                        throw b + " is not positive.";
+                    }
+                    var result = plus(a,b);
+                    if(result < 0){
+                        throw "Result was not positive.";
+                    }
+                    return result;
+                };
+                
+                var positiveMinus = function(a, b){
+                    if(a < 0){
+                        throw a + " is not positive."; 
+                    }
+                    if(b < 0){
+                        throw b + " is not positive.";
+                    }
+                    var result = minus(a,b);
+                    if(result < 0){
+                        throw "Result was not positive.";
+                    }
+                    return result;
+                };
+                
+                var positiveTimes = function(a, b){
+                    if(a < 0){
+                        throw a + " is not positive."; 
+                    }
+                    if(b < 0){
+                        throw b + " is not positive.";
+                    }
+                    var result = times(a,b);
+                    if(result < 0){
+                        throw "Result was not positive.";
+                    }
+                    return result;
+                };                
+                
+                /*************Assignment 1: refactory***************/
+               
+                
+                var positiveArithmetic = function(operator, a, b){
+                    if(a < 0){
+                        throw a + " is not positive."; 
+                    }
+                    if(b < 0){
+                        throw b + " is not positive.";
+                    }
+                    var result = operator(a ,b);
+                    if(result < 0){
+                        throw "Result was not positive.";
+                    }
+                    return result;                   
+                };
+                
+                var positiveAdd_2 = function(a, b){
+                    return positiveArithmetic(plus, a, b);    
+                };
+                
+                var positiveMinus_2 = function(a, b){
+                    return positiveArithmetic(minus, a, b);    
+                };
+                
+                var positiveTimes_2 = function(a, b){
+                    return positiveArithmetic(times, a, b);    
+                };
+                
+                display(positiveAdd_2(2,-4));       
+        
+            });
+            
+        </script>
+
+
+
+
+
+    </body>
+</html>
+
+

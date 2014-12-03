@@ -1,0 +1,139 @@
+<!doctype html>
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+
+    </head>
+
+
+    <body>
+        <div id="logger"> 
+        </div>
+
+
+
+
+
+        <script src="external/jquery.min.js"></script>
+        <script src="util.js"></script>
+        <script src="services.js"></script>
+
+        <script>
+            $(window).load(function () {
+
+                var display = function (text) {
+                    $("#logger").append("<p>" + text + "</p>");
+                };
+
+
+
+
+                /*Simple example, return a function*/
+                var add = function (a, b) {
+                    return a + b;
+                };
+
+                var addConstant = function (a) {
+                    return function (b) {
+                        return add(a, b);
+                    };
+                };
+
+                var add3 = addConstant(3);
+                display(add3);//print the code for the function
+                display("3+5=8: " + (add3(5) === 8));//prints true
+
+   
+        
+        
+        
+        
+                /**Example partial*/
+                var equal = function (a, b) {
+                    return a === b;
+                };
+
+                var isSeven = util.partial(equal)(7);
+
+                display("7=7: " +isSeven(7));//prints true
+                display("6=7: " + isSeven(6));// prints false
+
+
+  
+        
+        
+        
+                /*Example compose*/
+                display("3+4=7: " +util.compose(isSeven, add3)(4));//prints true
+
+
+        
+        
+        
+        
+                /*Example andThen*/
+                display("3+4=7: " + util.andThen(add3, isSeven)(4));
+                var isTen = util.partial(equal)(10);
+                display("4+3+3=10: " + util.andThen(util.andThen(add3, add3), isTen)(4));
+
+
+
+
+
+
+                //Example partial: Wrap fine grained interface
+                var colorDisplay = function (color, size, font, text) {
+
+                    var style =
+                            "style=" +
+                            "color:" + color + ";" +
+                            "font-size:" + size + ";";
+                    "font-family:" + font;
+
+                    $("#logger").append("<p " + style + ">" + text + "</p>");
+                };
+
+                var ourColorDisplay = util.partial(colorDisplay)("red", "40px", "Times New Roman");
+
+                ourColorDisplay("test");
+
+                var ourColorDisplay2 = util.partial(colorDisplay)("_", "40px", "Times New Roman");
+
+                ourColorDisplay2("blue", "test2");
+
+                //Example partial: adapting to interface, think of better example!!!!
+                var times = function (a, b) {
+                    return a * b;
+                };
+
+                var number = 2;
+                var result1 = [1, 2, 3, 4].map(function (a) {
+                    return times(number, a);
+                });
+
+                var result2 = [5, 6, 7, 8].map(util.partial(times)(number));
+
+                display(result1);
+                display(result2);
+
+                
+
+              //policy example?
+            
+
+
+            });
+
+        </script>
+
+
+
+
+
+    </body>
+</html>
+
+

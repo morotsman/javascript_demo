@@ -1,0 +1,109 @@
+<!doctype html>
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+
+    </head>
+
+
+    <body>
+        <div id="logger"> 
+        </div>
+
+
+
+
+
+        <script src="external/jquery.min.js"></script>
+        <script src="services.js"></script>
+        <script>
+            $(window).load(function () {
+
+                var display = function (text) {
+                    $("#logger").append("<p>" + text + "</p>");
+                };
+
+                var errorDisplay = function (text) {
+                    $("#logger").append("<p style='color:red'>" + text + "</p>");
+                };
+                
+                //decorator pattern in combination with strategy pattern on functional level.
+                var errorHandler = function (fun, errorStrategy) {
+                    return function (/*arguments*/) {
+                        try {
+                            return fun.apply(this, arguments);
+                        } catch (err) {
+                            return errorStrategy(err);
+                        }
+                    };
+                };
+
+                var displayAndThrowStrategy = function (err) {
+                    errorDisplay(err);
+                    throw err;
+                };
+
+                var statusStrategy = function (message) {
+                    return function (err) {
+                        return {result: false, message: message + " due to: " + err};
+                    };
+                };
+
+                //var myBook = errorHandler(service.book, displayAndThrowStrategy);
+                //var myFinalize = errorHandler(service.finalize, displayAndThrowStrategy);
+                var myBook = errorHandler(orderService.book, statusStrategy("Could not book "));
+                var myFinalize = errorHandler(orderService.finalize, statusStrategy("Could not finalize "));
+
+                var orderProcess = function (creditStrategy) {
+                    return function (order) {
+                        var bookResult = myBook(order.numberOfItems);
+                        if (bookResult.result === false) {
+                            return bookResult;
+                        }
+                        var creditResult = creditStrategy(order);
+                        if (creditResult.result === false) {
+                            return creditResult;
+                        }
+                        return myFinalize(bookResult.id);
+                    };
+                };
+
+                var noCreditCheckStrategy = function () {
+                    return {result: true};
+                };
+
+                var internalOrder = function (order) {
+                    return orderProcess(noCreditCheckStrategy)(order);
+                };
+
+                var creditCheckStrategy = function (order) {
+                    return orderService.isCreditOk(order.name);
+                };
+
+                var externalOrder = function (order) {
+                    return orderProcess(creditCheckStrategy)(order);
+                };
+
+                var order = {
+                    numberOfItems: 50,
+                    name: "Jens"
+                };
+
+                display(internalOrder(order).message);
+                display(externalOrder(order).message);
+
+            });
+
+        </script>
+
+
+
+
+
+    </body>
+</html>
+
+

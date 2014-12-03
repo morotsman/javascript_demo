@@ -1,0 +1,87 @@
+<!doctype html>
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+
+    </head>
+
+
+    <body>
+        <div id="logger"> 
+        </div>
+
+
+
+
+
+        <script src="external/jquery.min.js"></script>
+
+        <script>
+            $(window).load(function () {
+
+                var display = function (text) {
+                    $("#logger").append("<p>" + text + "</p>");
+                };
+
+                function Service(){
+                    this.openResource= function () {
+                        display("Expensive resource opened.");
+                        return "Expensive resource";
+                    };
+                    
+                    this.closeResource= function (resource) {
+                        display(resource + " closed.");
+                    };
+                };
+                
+                var myService = new Service();  
+                
+                var useResource = function () {
+                    var myResource = myService.openResource();
+                    display("I'm using " + myResource);
+                    myService.closeResource(myResource);
+                };
+                
+                useResource();
+                
+                /*******Refactory***************/
+                
+                function Service2(){
+                    var openResource= function () {
+                        display("Expensive resource opened.");
+                        return "Expensive resource";
+                    };
+                    
+                    var closeResource= function (resource) {
+                        display(resource + " closed.");
+                    };                    
+                    
+                    this.loanResource = function(callback){
+                        var resource = openResource();
+                        callback(resource);
+                        closeResource(resource);
+                    };
+                };
+                
+                var myService2 = new Service2();
+                
+                myService2.loanResource(function(resource){
+                    display("I'm using " + resource);    
+                });
+
+
+            });
+
+        </script>
+
+
+
+
+
+    </body>
+</html>
+
+
