@@ -103,11 +103,30 @@ var AnimatorTemplate = (function() {
 
         var linearImpl = function(property, settings) {
             return function(properties, timeFromStart) {
-                var distance = (settings.to - settings.from) * ((timeFromStart - settings.startTime) / (settings.duration));
-                properties[property] = settings.from + distance;
+                var change = (settings.to - settings.from) * ((timeFromStart - settings.startTime) / (settings.duration));
+                properties[property] = settings.from + change;
                 return properties;
             };
         };
+        
+        var cosOrSin = function(property, settings, fun){
+            return function(properties, timeFromStart){
+                var scale = settings.period / (2*Math.PI);
+                var time =(timeFromStart - settings.startTime); 
+                var position = fun(time/scale);
+                var change = (settings.to - settings.from) * position;
+                properties[property] = settings.from + change;
+                return properties;
+            };          
+        }
+        
+        var sinImpl = function(property, settings){
+            return cosOrSin(property, settings, Math.sin);
+        };
+        
+        var cosImpl = function(property, settings){
+            return cosOrSin(property, settings, Math.cos);
+        };        
         
             
         var getFallDistance = function(gravity, initialVelocity,  time){
@@ -169,7 +188,11 @@ var AnimatorTemplate = (function() {
         var effectSelector = function(effect) {
             if (effect === "fall") {
                 return fallImpl;
-            } else {
+            }else if (effect === "sin") {
+                return sinImpl;
+            } else if (effect === "cos") {
+                return cosImpl;
+            }{
                 return linearImpl;
             }
         };
