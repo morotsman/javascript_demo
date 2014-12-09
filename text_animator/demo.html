@@ -84,14 +84,18 @@
                     });
                 });
 
-                var letters = ["D", "E", "M", "O", " ", "Z", "E", "I", "T"];
-                var letterStream = new Stream()
-                        .generate(0, function(seed) {
-                    return seed + 1 === letters.length ? 0 : seed + 1;
-                })
-                        .map(function(i) {
-                    return letters[i];
-                });
+                
+
+
+                var letterStreamCreator = function(letters) {
+                    return new Stream()
+                            .generate(0, function(seed) {
+                        return seed + 1 === letters.length ? 0 : seed + 1;
+                    })
+                            .map(function(i) {
+                        return letters[i];
+                    });
+                };
 
 
 
@@ -100,51 +104,30 @@
                         return Math.floor((Math.random() * high) + low);
                     });
                 };
+                
+         
 
-                var randomPositions =
-                        randomStream(0, 700)
-                        .zip(randomStream(30, 600))
+
+                var demoZeitStream =
+                        positiveNumbers
+                        .zip(letterStreamCreator(["D", "E", "M", "O", " ", "Z", "E", "I", "T"]))
                         .map(function(v) {
-                    return {x: v.one, y: v.two};
+                    return {index: v.one, word: v.two};
                 });
-
-                var indexAndRandomPositions =
-                        randomPositions
-                        .tail()
-                        .zip(positiveNumbers)
+                
+                 var mitStream =
+                        positiveNumbers
+                        .zip(letterStreamCreator(["M", "I", "T", " ", "N", "I", "K", "L", "A", "S"]))
                         .map(function(v) {
-                    return {index: v.two, x: v.one.x, y: v.one.y};
+                    return {index: v.one, word: v.two};
                 });
-
-
-                var primesWithPositionAndIndex =
-                        indexAndRandomPositions
-                        .zip(primes)
+                
+                 var niklasStream =
+                        positiveNumbers
+                        .zip(letterStreamCreator([]))
                         .map(function(v) {
-                    return {index: v.one.index, word: v.two, x: v.one.x, y: v.one.y};
-                });
-
-                var words = ["Function", "Agile", "Scrum", "Scala", "Java", "JavaScript", "(a,b)=>a+b", "val x=Stream(1,2,3)", "map", "forEach", "foldLeft", "foldRight"];
-
-                var randomWordStream =
-                        randomStream(0, words.length)
-                        .map(function(v) {
-                    return words[v];
-                });
-
-                var wordsWithPositionAndIndex =
-                        indexAndRandomPositions
-                        .zip(randomWordStream)
-                        .map(function(v) {
-                    return {index: v.one.index, word: v.two, x: v.one.x, y: v.one.y};
-                });
-
-                var lettersWithPositionAndIndex =
-                        indexAndRandomPositions
-                        .zip(letterStream)
-                        .map(function(v) {
-                    return {index: v.one.index, word: v.two, x: v.one.x, y: v.one.y};
-                });
+                    return {index: v.one, word: v.two};
+                });                 
 
 
 
@@ -160,108 +143,59 @@
                     return $(".active")
                             .attr('id');
                 };
-                
+
 
                 var animatorTemplate1 = new AnimatorTemplate({canvas: canvas1});
 
-                var animator1 = primesWithPositionAndIndex.take(14).foldLeft(animatorTemplate1, function(animator, v) {
+                var animatorTemplate2 = demoZeitStream.take(9).foldLeft(animatorTemplate1, function(animator, v) {
                     return animator.animate(
                             function(animation) {
                                 return animation
                                         .subject(v.word)
                                         .font("Arial")
                                         .fontSize(60)
-                                        .position({x: 300, y: 100})                              
-                                        //.fade({startTime: v.index * 500 + 3000, duration: 5000,from: 0,to: 1, effectName:"fall", gravity:9.81, speed:0.3, cor:0.7})
-                                        //.fade({startTime: v.index * 500 + 5000, duration: 3000,from: 1, to: 0})
-                                        //.scale({startTime: v.index * 500, duration: 7000,from: 0.2,to: 1,effectName: "fall", gravity:9.81, speed:0.4, cor:1}) 
-                                        //.scrollX({startTime: v.index * 500 + 5000, duration: 5000,from: v.x,to: v.x+200})
-                                        .scrollY({startTime: v.index*500, duration: 14000,from: 300,to: 250, effectName: "cos", period:7000})
-                                        .scale({startTime: v.index*500, duration: 14000,from: 1,to: 0.5, effectName: "cos", period:7000})
-                                        .scrollX({startTime: v.index*500, duration: 14000, from: 350,to: 650, effectName: "sin", period:7000})
-                                        .scrollY({startTime: v.index * 500 + 14000, duration: 1000,from: 250,to: 600, effectName: "fall", gravity:9.81, cor:0.3, speed:20, initialVelocity:-30})
-                                        .scrollX({startTime: v.index*500 + 15000, duration: 1500, from: 350,to: 100, effectName: "sin", period:7000})
-                                        //.scrollY({startTime: v.index * 100 + 5000, duration: 10000,from: 100,to: 100, effectName: "jump", gravity:19.81, cor:0.5, speed:10, initialVelocity:-40})
-                                        //.fade({startTime: v.index * 100, duration: 10000,from: 1, to: 0})
-                                        
+                                        .position({x: 300, y: 100})
+                                        .scrollY({startTime: v.index * 500, duration: 14000, from: 300, to: 250, effectName: "cos", period: 7000})
+                                        .scale({startTime: v.index * 500, duration: 14000, from: 1, to: 0.5, effectName: "cos", period: 7000})
+                                        .scrollX({startTime: v.index * 500, duration: 14000, from: 350, to: 650, effectName: "sin", period: 7000})
+                                        .scrollY({startTime: v.index * 500 + 14000, duration: 1000, from: 250, to: 550, effectName: "fall", cor: 0.3, speed: 20, initialVelocity: -30})
+                                        .scrollX({startTime: v.index * 500 + 15000, duration: 1500, from: 350, to: 100 + v.index * 22, effectName: "sin", period: 7000})
+                                        .static({startTime: v.index * 500 + 16500, duration: 5000});
+
                             });
-                })
-                        .loop()
-                        .create();
-                
-                
-                var animatorTemplate2 = new AnimatorTemplate({canvas: canvas2});
-                var animatorTemplate2 = wordsWithPositionAndIndex.take(15).foldLeft(animatorTemplate2, function(animator, v) {
-                    return animator.animate(
-                            function(animation) {
-                                return animation
-                                        .subject(v.word)
-                                        .font("Arial")
-                                        .fontSize(50)
-                                        .position({x: v.x, y: v.y})
-                                        .fade({startTime: v.index * 1000, duration: 5000,from: 0,to: 1})
-                                        .scale({startTime: v.index * 1000, duration: 10000,from: 0,to: 2})
-                                        .fade({startTime: v.index * 1000 + 5000, duration: 5000,from: 1,to: 0});
-                            });
-                });  
-                
-                animatorTemplate2 = lettersWithPositionAndIndex.take(27).foldLeft(animatorTemplate2, function(animator, v){
-                    return animator.animate(function(animation){
-                        return animation
-                                .subject(v.word)
-                                .font("Arial")
-                                .fontSize(50)
-                                .position({x: v.x, y: v.y})
-                                .fade({startTime: v.index * 1000 + 15000, duration: 5000,from: 0,to: 1})
-                                .scale({startTime: v.index * 1000 + 15000, duration: 10000,from: 0,to: 2})
-                                .fade({startTime: v.index * 1000 + 20000, duration: 5000,from: 1,to: 0});
-                    });
-                }).animate(function(animation){
-                    return animation
-                            .subject("DEMO ZEIT")
-                            .position({x:100, y: 200})
-                            .font("Arial")
-                            .fontSize(80)
-                            .fade({startTime: 19000, duration: 9000,from: 0,to: 1})
-                            .scale({startTime: 19000, duration: 9000,from: 0,to: 1})
-                            .fade({startTime: 28000, duration: 60000,from: 1,to: 0});
-                }).animate(function(animation){
-                    return animation
-                            .subject("MIT NIKLAS")
-                            .position({x:100, y: 250})
-                            .font("Arial")
-                            .fontSize(40)
-                            .fade({startTime: 21000, duration: 7000,from: 0,to: 1})
-                            .scale({startTime: 21000, duration: 7000,from: 0,to: 1})
-                            .fade({startTime: 28000, duration: 60000,from: 1,to: 0});                    
-                            
                 });
+               
                 
                 
-                var animator2 = animatorTemplate2.create();
                 
+                
+                var animator1 = animatorTemplate2.loop().create();
+
+
+
+
+
 
                 var slide = 1;
-                
-                
-                var animate = function(){
+
+
+                var animate = function() {
                     animator1.stop();
-                    animator2.stop();
                     if (getActiveSlide() === "animated_1") {
                         animator1.start();
-                    } else if (getActiveSlide() === "animated_2"){                     
-                        animator2.start();
-                    }                
+                    } else if (getActiveSlide() === "animated_2") {
+
+                    }
                 };
-                
+
                 document.getElementById("impress").addEventListener("impress:stepenter", function(event, more) {
                     animate();
                 });
 
                 animate();
-                
 
-      
+
+
             });
 
 

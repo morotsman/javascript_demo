@@ -107,7 +107,13 @@ var AnimatorTemplate = (function() {
                 properties[property] = settings.from + change;
                 return properties;
             };
-        };
+        }; 
+        
+        var staticImpl = function(property, settings) {
+            return function(properties, timeFromStart) {
+                return properties;
+            };
+        };         
         
         var cosOrSin = function(property, settings, fun){
             return function(properties, timeFromStart){
@@ -118,7 +124,7 @@ var AnimatorTemplate = (function() {
                 properties[property] = settings.from + change;
                 return properties;
             };          
-        }
+        };
         
         var sinImpl = function(property, settings){
             return cosOrSin(property, settings, Math.sin);
@@ -149,9 +155,9 @@ var AnimatorTemplate = (function() {
                 
         
         var fallImpl = function(property, settings){
-            var gravity = settings.gravity;
-            var speed = settings.speed===undefined?1:settings.speed;
-            var cor = settings.cor!==undefined?settings.cor:0.5; 
+            var gravity = getOrDefault(settings.gravity,9.81);
+            var speed = getOrDefault(settings.speed,1);
+            var cor = getOrDefault(settings.cor,0.5); 
             var initialVelocity = getOrDefault(settings.initialVelocity, 0);
             var effectId = getEffectId();
             
@@ -190,9 +196,11 @@ var AnimatorTemplate = (function() {
                 return fallImpl;
             }else if (effect === "sin") {
                 return sinImpl;
-            } else if (effect === "cos") {
+            }else if (effect === "cos") {
                 return cosImpl;
-            }{
+            }else if (effect === "static") {
+                return staticImpl;
+            }else{
                 return linearImpl;
             }
         };
@@ -232,6 +240,11 @@ var AnimatorTemplate = (function() {
 
         this.scrollY = function(settings) {
             return effect("y", settings);
+        };
+        
+        this.static = function(settings) {
+            settings.effectName = "static";
+            return effect(undefined, settings);
         };
 
 
@@ -356,8 +369,6 @@ var AnimatorTemplate = (function() {
                 runtimeAnimationsArray = runtimeAnimationsArray.filter(function(animation){
                     return !(timeFromStart > animation.getStopTime());
                 });
-                
-                //console.log("animations: " + runtimeAnimationsArray.length);
 
                 runtimeAnimationsArray.filter(function(animation){
                     return (timeFromStart > animation.getStartTime());
@@ -375,7 +386,6 @@ var AnimatorTemplate = (function() {
                         loopTime = new Date().getTime();
                         runtimeAnimationsArray = that.createRuntimeAnimations(animations);
                     }else{
-                        //console.log("stop");
                         return;
                     }
                 }
