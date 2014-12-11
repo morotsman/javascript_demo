@@ -102,110 +102,124 @@ var AnimatorTemplate = (function() {
         };
 
         var linearImpl = function(property, settings) {
-            return function(properties, timeFromStart) {
-                var change = (settings.to - settings.from) * ((timeFromStart - settings.startTime) / (settings.duration));
-                properties[property] = settings.from + change;
-                return properties;
+            return function() {
+                return function(properties, timeFromStart) {
+                    if (timeFromStart > (settings.startTime + settings.duration)) {
+                        timeFromStart = settings.startTime + settings.duration;
+                    }
+                    var change = settings.change * ((timeFromStart - settings.startTime) / (settings.duration));
+                    properties[property] = properties[property] + change;
+                    return properties;
+                };
             };
-        }; 
-        
-        var staticImpl = function(property, settings) {
-            return function(properties, timeFromStart) {
-                return properties;
-            };
-        };         
-        
-        var cosOrSin = function(property, settings, fun){
-            return function(properties, timeFromStart){
-                var scale = settings.period / (2*Math.PI);
-                var time =(timeFromStart - settings.startTime); 
-                var position = fun(time/scale);
-                var change = (settings.to - settings.from) * position;
-                properties[property] = settings.from + change;
-                return properties;
-            };          
+
         };
-        
-        var sinImpl = function(property, settings){
+
+        var staticImpl = function(property, settings) {
+            return function(){
+                return function(properties, timeFromStart) {
+                    return properties;
+                };                
+            };
+        };
+
+        var cosOrSin = function(property, settings, fun) {
+            return function() {
+                return function(properties, timeFromStart) {
+                    if (timeFromStart > (settings.startTime + settings.duration)) {
+                        timeFromStart = settings.startTime + settings.duration;
+                    }
+                    var scale = settings.period / (2 * Math.PI);
+                    var time = (timeFromStart - settings.startTime);
+                    var position = fun(time / scale);
+                    var change = settings.change * position;
+
+                    properties[property] = properties[property] + change;
+                    return properties;
+                };
+            };
+        };
+
+        var sinImpl = function(property, settings) {
             return cosOrSin(property, settings, Math.sin);
         };
-        
-        var cosImpl = function(property, settings){
+
+        var cosImpl = function(property, settings) {
             return cosOrSin(property, settings, Math.cos);
-        };        
-        
-            
-        var getFallDistance = function(gravity, initialVelocity,  time){
-            return initialVelocity*time + 0.5*gravity*Math.pow(time,2);    
+        };
+
+
+        var getFallDistance = function(gravity, initialVelocity, time) {
+            return initialVelocity * time + 0.5 * gravity * Math.pow(time, 2);
+        };
+
+        var impactVelocity = function(initialHeight, gravity) {
+            return Math.sqrt(2 * gravity * initialHeight);
+        };
+
+        var maxHeight = function(gravity, initialVelocity) {
+            return Math.pow(initialVelocity, 2) / (2 * gravity);
+        };
+
+
+        var fallImpl = function(property, settings) {
+            return function() {
+                var gravity = getOrDefault(settings.gravity, 9.81);
+                var speed = getOrDefault(settings.speed, 1);
+                var cor = getOrDefault(settings.cor, 0.5);
+                var initialVelocity = getOrDefault(settings.initialVelocity, 0);
+                var fallHeight = settings.change + maxHeight(gravity, initialVelocity);
+                var initialTime = settings.startTime;
+                var intialPosition;
+                var stop = false;
+                var ground;
+
+                return function(properties, timeFromStart) {
+                    intialPosition = getOrDefault(intialPosition, properties[property]);
+                    ground = getOrDefault(ground, intialPosition + settings.change);
+                    if (stop || timeFromStart > (settings.startTime + settings.duration)) {
+                        timeFromStart = settings.startTime + settings.duration;
+                        properties[property] = ground;
+                        return properties;
+                    }
+
+                    var time = (timeFromStart - initialTime) / 1000 * speed;
+                    var fallDistance = getFallDistance(gravity, initialVelocity, time);
+                    properties[property] = intialPosition + fallDistance;
+
+                    if (properties[property] > ground) {
+                        initialVelocity = -cor * impactVelocity(fallHeight, gravity);
+                        fallHeight = maxHeight(gravity, initialVelocity);
+                        initialTime = timeFromStart;
+                        intialPosition = ground;
+
+                        if (Math.abs(initialVelocity) < 1) {//to avoid flickering
+                            stop = true;
+                        }
+
+                    }
+
+                    return properties;
+                };
+            };
+
         };
         
-        var impactVelocity = function(initialHeight,gravity){
-            return Math.sqrt(2*gravity*initialHeight);    
-        };  
-        
-        var maxHeight = function(gravity, initialVelocity){
-            return Math.pow(initialVelocity,2)/(2*gravity);
-        }; 
-        
-        var getEffectId = function(){
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8); return v.toString(16);
-            }); 
-        }; 
-                
-        
-        var fallImpl = function(property, settings){
-            var gravity = getOrDefault(settings.gravity,9.81);
-            var speed = getOrDefault(settings.speed,1);
-            var cor = getOrDefault(settings.cor,0.5); 
-            var initialVelocity = getOrDefault(settings.initialVelocity, 0);
-            var effectId = getEffectId();
-            
-            return function(properties, timeFromStart){
-                if(properties[effectId] !== undefined &&properties[effectId].stop){
-                    return properties;
-                }
-                if(properties[effectId]===undefined){
-                   properties[effectId] = {};
-                   properties[effectId].initialVelocity = initialVelocity; 
-                   properties[effectId].fallHeight = settings.to - settings.from + maxHeight(gravity, properties[effectId].initialVelocity);
-                   properties[effectId].initialTime = settings.startTime; 
-                   properties[effectId].intialPosition = settings.from;
-                }
-                var time = (timeFromStart - properties[effectId].initialTime)/1000*speed;
-                var fallDistance = getFallDistance(gravity, properties[effectId].initialVelocity, time);
-                properties[property] = properties[effectId].intialPosition + fallDistance;
-                
-                if((properties[effectId].intialPosition + fallDistance) > settings.to){                                      
-                    properties[effectId].initialVelocity = -cor*impactVelocity(properties[effectId].fallHeight, gravity); 
-                    if(Math.abs(properties[effectId].initialVelocity) < 1){
-                       properties[effectId].stop = true; 
-                       properties[property] = settings.to;
-                    }
-                    properties[effectId].fallHeight = maxHeight(gravity, properties[effectId].initialVelocity);
-                    properties[effectId].initialTime = timeFromStart;
-                    properties[effectId].intialPosition = settings.to;
-                }
-                
-                return properties;
-            };
-        };        
-
         var effectSelector = function(effect) {
             if (effect === "fall") {
                 return fallImpl;
-            }else if (effect === "sin") {
+            } else if (effect === "sin") {
                 return sinImpl;
-            }else if (effect === "cos") {
+            } else if (effect === "cos") {
                 return cosImpl;
-            }else if (effect === "static") {
+            } else if (effect === "static") {
                 return staticImpl;
-            }else{
+            } else {
                 return linearImpl;
             }
         };
-        
-        
+
+
 
         var effect = function(property, settings) {
             var selectedEffect = effectSelector(settings.effectName);
@@ -241,7 +255,7 @@ var AnimatorTemplate = (function() {
         this.scrollY = function(settings) {
             return effect("y", settings);
         };
-        
+
         this.static = function(settings) {
             settings.effectName = "static";
             return effect(undefined, settings);
@@ -275,12 +289,12 @@ var AnimatorTemplate = (function() {
                 fontSize: fontSize
             };
         };
-        
-        this.copy = function(){
+
+        this.copy = function() {
             var copyOfConfig = copyConfig();
-            return new TextAnimation(copyOfConfig); 
+            return new TextAnimation(copyOfConfig);
         };
-        
+
 
 
     }
@@ -298,47 +312,35 @@ var AnimatorTemplate = (function() {
 
         var requestId;
 
+        //TODO borde sortera effekter efter starttid
         this.apply = function(timeFromStart, animation) {
-            var properties = animation.oldProperties!==undefined?animation.oldProperties:animation.getProperties();
-            
-            animation.runtimeEffects = animation.runtimeEffects.filter(function(e){
-                return timeFromStart < (e.startTime + e.duration);
-            });
-            
-            //console.log("effects: " + animation.runtimeEffects.length);
-            
-            var inScopeEffects = animation.runtimeEffects
-                    .filter(function(e) {
-                return e.startTime < timeFromStart;
-            });
+            var properties = animation.getProperties();
 
-            if (inScopeEffects.length!==0) {
-                var modifiedProperties = properties;
-                for(i = 0; i < inScopeEffects.length; i++){
-                    modifiedProperties = inScopeEffects[i].effect(modifiedProperties, timeFromStart);
+            var modifiedProperties = properties;
+            for (var i = 0; i < animation.runtimeEffects.length; i++) {
+                if (animation.runtimeEffects[i].startTime < timeFromStart) {
+                    modifiedProperties = animation.runtimeEffects[i].effect(modifiedProperties, timeFromStart);
+                    //console.log(i + " " + modifiedProperties.y);
                 }
-                
-
-                animation.oldProperties = modifiedProperties;
-                return modifiedProperties;
             }
 
+            return modifiedProperties;
         };
-        
-        this.createRuntimeAnimations = function(animations){
-            return animations.foldLeft(new Array(), function(acc, animation){
+
+        this.createRuntimeAnimations = function(animations) {
+            return animations.foldLeft(new Array(), function(acc, animation) {
                 var copyOfAnimations = animation.copy();
-                
-                copyOfAnimations.runtimeEffects = animation.getEffects().foldLeft(new Array(), function(acc, effect){
+
+                copyOfAnimations.runtimeEffects = animation.getEffects().foldLeft(new Array(), function(acc, effect) {
                     acc.push({
-                        effect: effect.effect,
+                        effect: effect.effect(),
                         startTime: effect.startTime,
                         duration: effect.duration
                     });
                     return acc;
 
                 });
-                
+
                 acc.push(copyOfAnimations);
                 return acc;
             });
@@ -348,7 +350,7 @@ var AnimatorTemplate = (function() {
             cancelAnimationFrame(requestId);
             context.clearRect(0, 0, canvas.width, canvas.height);
         };
-             
+
         this.start = function() {
             var stopTime = animations.foldLeft(0, function(acc, animation) {
                 return Math.max(acc, animation.getStopTime());
@@ -356,46 +358,44 @@ var AnimatorTemplate = (function() {
             var loopTime;
             var startTime;
             var that = this;
-            
             var runtimeAnimationsArray = this.createRuntimeAnimations(animations);
             var runner = function(now) {
+
                 startTime = startTime === undefined ? new Date().getTime() : startTime;
                 startTime = loopTime === undefined ? startTime : loopTime;
 
                 var timeFromStart = now - startTime;
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                
-                
-                runtimeAnimationsArray = runtimeAnimationsArray.filter(function(animation){
-                    return !(timeFromStart > animation.getStopTime());
-                });
 
-                runtimeAnimationsArray.filter(function(animation){
-                    return (timeFromStart > animation.getStartTime());
-                }).forEach(function(animation) {
-                    var prop = that.apply(timeFromStart, animation);
-                    if (prop !== undefined) {                    
-                        context.font = prop.scale* prop.fontSize + "px " + prop.font;
+
+                for (var i = 0; i < runtimeAnimationsArray.length; i++) {
+                    var animation = runtimeAnimationsArray[i];
+                    if ((timeFromStart < animation.getStopTime()) && timeFromStart > animation.getStartTime()) {
+
+                        var prop = that.apply(timeFromStart, animation);
+
+                        context.font = prop.scale * prop.fontSize + "px " + prop.font;
                         context.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
                         context.fillText(prop.subject, prop.x, prop.y);
-                    }
 
-                });
+                    }
+                }
+
                 if ((timeFromStart > stopTime)) {
-                    if(loop){
+                    if (loop) {
                         loopTime = new Date().getTime();
                         runtimeAnimationsArray = that.createRuntimeAnimations(animations);
-                    }else{
+                    } else {
                         return;
                     }
                 }
-                
+
                 requestId = requestAnimationFrame(runner);
             };
             requestId = requestAnimationFrame(runner);
         };
-       
-        
+
+
 
     }
     ;

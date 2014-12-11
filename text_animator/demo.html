@@ -110,7 +110,7 @@
 
                 var demoZeitStream =
                         positiveNumbers
-                        .zip(letterStreamCreator(["D", "E", "M", "O", " ", "Z", "E", "I", "T"]))
+                        .zip(letterStreamCreator(["D", "E", "M", "O", " ", "Z", "E", "I", "T", ". "]))
                         .map(function(v) {
                     return {index: v.one, word: v.two};
                 });
@@ -147,20 +147,41 @@
 
                 var animatorTemplate1 = new AnimatorTemplate({canvas: canvas1});
 
-                var animatorTemplate2 = demoZeitStream.take(9).foldLeft(animatorTemplate1, function(animator, v) {
+                var animatorTemplate2 = demoZeitStream.take(1).foldLeft(animatorTemplate1, function(animator, v) {
                     return animator.animate(
                             function(animation) {
                                 return animation
                                         .subject(v.word)
                                         .font("Arial")
                                         .fontSize(60)
-                                        .position({x: 300, y: 100})
-                                        .scrollY({startTime: v.index * 500, duration: 14000, from: 300, to: 250, effectName: "cos", period: 7000})
-                                        .scale({startTime: v.index * 500, duration: 14000, from: 1, to: 0.5, effectName: "cos", period: 7000})
-                                        .scrollX({startTime: v.index * 500, duration: 14000, from: 350, to: 650, effectName: "sin", period: 7000})
-                                        .scrollY({startTime: v.index * 500 + 14000, duration: 1000, from: 250, to: 550, effectName: "fall", cor: 0.3, speed: 20, initialVelocity: -30})
-                                        .scrollX({startTime: v.index * 500 + 15000, duration: 1500, from: 350, to: 100 + v.index * 22, effectName: "sin", period: 7000})
-                                        .static({startTime: v.index * 500 + 16500, duration: 5000});
+                                        .position({x: 300, y: 100}) 
+                                        //.scrollX({startTime: v.index, duration: 4000, change:50, effectName: "cos", period:2000})
+                                        //.scrollY({startTime: v.index * 2000, duration: 4000, change:-50, effectName: "sin", period:4000})
+                                        //.scrollY({startTime: v.index * 2000, duration: 2000, change:250, effectName: "fall", speed: 20})
+                                        
+                                        .scrollY({startTime: v.index * 800 + 2000, duration: 4000, change:300, effectName: "linear"})
+                                        .scrollY({startTime: v.index * 800, duration: 2000, change:400 - v.index * 40, effectName: "fall", speed:20})
+                                        
+                                        /*
+                                        .scrollX({startTime: v.index * 400, duration: 28000, change:250, effectName: "sin", period: 7000})
+                                        .scale({startTime: v.index * 400, duration: 28000, change:-0.5, effectName: "cos", period: 7000})
+                                        .scrollY({startTime: v.index * 400, duration: 28000, change:-50, effectName: "cos", period: 7000})
+                                        .scrollY({startTime: v.index * 800 + 7000, duration: 2000, change:400 - v.index * 40, effectName: "fall", speed:20})
+                                        .scrollY({startTime: v.index * 800 + 11000, duration: 4000, change:300, effectName: "linear"})
+                                        .scrollY({startTime: v.index * 800 + 15000, duration: 4000, change:-300, effectName: "linear"})
+                                */
+                                
+                                
+                                        //.scrollX({startTime: v.index * 400 + 15000, duration: 1500, change: -250 + v.index * 22, effectName: "sin", period: 7000})
+                                        //.static({startTime: v.index * 400 + 16500, duration: 5000})
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
 
                             });
                 });
@@ -169,7 +190,9 @@
                 
                 
                 
-                var animator1 = animatorTemplate2.loop().create();
+                var animator1 = animatorTemplate2
+                        .loop()
+                        .create();
 
 
 
