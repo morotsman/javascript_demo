@@ -173,13 +173,14 @@ var AnimatorTemplate = (function() {
                 var intialPosition;
                 var stop = false;
                 var ground;
+                var prevFallDistance = 0;
 
                 return function(properties, timeFromStart) {
                     intialPosition = getOrDefault(intialPosition, properties[property]);
                     ground = getOrDefault(ground, intialPosition + settings.change);
                     if (stop || timeFromStart > (settings.startTime + settings.duration)) {
                         timeFromStart = settings.startTime + settings.duration;
-                        properties[property] = ground;
+                        properties[property] = settings.change + properties[property];
                         return properties;
                     }
 
