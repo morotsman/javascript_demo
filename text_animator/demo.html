@@ -73,7 +73,7 @@
 
 
 
-                var positiveNumbers = new Stream().generate(1, function(seed) {
+                var positiveNumbers = new Stream().generate(0, function(seed) {
                     return seed + 1;
                 });
 
@@ -147,22 +147,30 @@
 
                 var animatorTemplate1 = new AnimatorTemplate({canvas: canvas1});
 
-                var animatorTemplate2 = demoZeitStream.take(9).foldLeft(animatorTemplate1, function(animator, v) {
+                var animatorTemplate2 = demoZeitStream.take(200).foldLeft(animatorTemplate1, function(animator, v) {
                     return animator.animate(
                             function(animation) {
                                 return animation
                                         .subject(v.word)
                                         .font("Arial")
-                                        .fontSize(60)
-                                        .position({x: 300, y: 100})                                                         
-                                        .scrollX({startTime: v.index * 400, duration: 28000, change:250, effectName: "sin", period: 7000})
-                                        .scale({startTime: v.index * 400, duration: 28000, change:-0.5, effectName: "cos", period: 7000})
-                                        .scrollY({startTime: v.index * 400, duration: 28000, change:-50, effectName: "cos", period: 7000})
-                                        .scrollY({startTime: 11500, duration: 2000, change:400, effectName: "fall", speed:20})
-                                        .scrollY({startTime: v.index * 300 + 13500, duration: 1000, change:-400, effectName: "linear"})
-                                        .scrollY({startTime: v.index * 300 + 14500, duration: 1000, change:400, effectName: "linear"})
-                                        .scrollY({startTime: v.index * 300 + 15500, duration: 1000, change:-400, effectName: "linear"})
-                                        .scrollY({startTime: v.index * 300 + 16500, duration: 1000, change:400, effectName: "linear"})         
+                              
+                                        .fontSize(25)
+                                        .position({x: 300, y: 100})  
+                                
+                                        .scrollX({startTime: v.index * 500, duration: 49000, change:250, effectName: "sin", period: 7000})
+                                        .scale({startTime: v.index * 500, duration: 49000, change:-0.5, effectName: "cos", period: 7000})
+                                        .scrollY({startTime: v.index * 500, duration: 49000, change:-25, effectName: "cos", period: 7000})
+                                
+                                        .scrollY({startTime: v.index*500 + 7000, duration: 2000, change:50, effectName: "fall", speed:30, cor:0})
+                                        .scrollY({startTime: v.index*500 + 14000, duration: 2000, change:50, effectName: "fall", speed:30, cor:0})
+                                        .scrollY({startTime: v.index*500 + 21000, duration: 2000, change:50, effectName: "fall", speed:30, cor:0})
+                                        .scrollY({startTime: v.index*500 + 28000, duration: 2000, change:50, effectName: "fall", speed:30, cor:0})
+                                        .scrollY({startTime: v.index*500 + 35000, duration: 2000, change:50, effectName: "fall", speed:30, cor:0})
+                                        .scrollY({startTime: v.index*500 + 42000, duration: 2000, change:50, effectName: "fall", speed:30, cor:0})
+                                       
+
+                                
+                                    
                             });
                 });
                

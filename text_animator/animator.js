@@ -116,10 +116,10 @@ var AnimatorTemplate = (function() {
         };
 
         var staticImpl = function(property, settings) {
-            return function(){
+            return function() {
                 return function(properties, timeFromStart) {
                     return properties;
-                };                
+                };
             };
         };
 
@@ -205,7 +205,7 @@ var AnimatorTemplate = (function() {
             };
 
         };
-        
+
         var effectSelector = function(effect) {
             if (effect === "fall") {
                 return fallImpl;
@@ -351,7 +351,9 @@ var AnimatorTemplate = (function() {
             cancelAnimationFrame(requestId);
             context.clearRect(0, 0, canvas.width, canvas.height);
         };
-
+        
+        /*
+         * TODO check this one on linux
         this.start = function() {
             var stopTime = animations.foldLeft(0, function(acc, animation) {
                 return Math.max(acc, animation.getStopTime());
@@ -360,27 +362,61 @@ var AnimatorTemplate = (function() {
             var startTime;
             var that = this;
             var runtimeAnimationsArray = this.createRuntimeAnimations(animations);
+            var frameRate = 0;
+            var lastFrameTime = 0;
             var runner = function(now) {
 
                 startTime = startTime === undefined ? new Date().getTime() : startTime;
                 startTime = loopTime === undefined ? startTime : loopTime;
 
                 var timeFromStart = now - startTime;
+
+                frameRate++;
+                if (timeFromStart - lastFrameTime > 1000) {
+                    console.log("start:" + frameRate);
+                    frameRate = 0;
+                    lastFrameTime = timeFromStart;
+                }
+
+                var tcanvas = document.createElement('canvas'); //tcanvas must be in global scope
+
+
                 context.clearRect(0, 0, canvas.width, canvas.height);
 
 
+                var tctx = tcanvas.getContext('2d');
                 for (var i = 0; i < runtimeAnimationsArray.length; i++) {
                     var animation = runtimeAnimationsArray[i];
                     if ((timeFromStart < animation.getStopTime()) && timeFromStart > animation.getStartTime()) {
 
+
                         var prop = that.apply(timeFromStart, animation);
 
-                        context.font = prop.scale * prop.fontSize + "px " + prop.font;
-                        context.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
-                        context.fillText(prop.subject, prop.x, prop.y);
 
+
+                        tctx.font = prop.fontSize + "px " + prop.font;
+                        tctx.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
+
+                        tcanvas.width = tctx.measureText(prop.subject).width;
+                        tcanvas.height = prop.fontSize;
+
+                        tctx.font = prop.fontSize + "px " + prop.font;
+                        tctx.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
+                        tctx.fillText(prop.subject, 0, tcanvas.height);
+
+                        if (prop.scale != 1) {
+                            context.save();
+                            context.scale(prop.scale, prop.scale);
+
+                            context.drawImage(tcanvas, prop.x / prop.scale, prop.y / prop.scale);
+                            context.restore();
+                        } else {
+                            context.drawImage(tcanvas, prop.x / prop.scale, prop.y / prop.scale);
+                        }
                     }
                 }
+
+                //context.drawImage(tcanvas, 200, 200);
 
                 if ((timeFromStart > stopTime)) {
                     if (loop) {
@@ -395,11 +431,57 @@ var AnimatorTemplate = (function() {
             };
             requestId = requestAnimationFrame(runner);
         };
+        */
 
+        this.start = function() {
+            var stopTime = animations.foldLeft(0, function(acc, animation) {
+                return Math.max(acc, animation.getStopTime());
+            });
+            var loopTime;
+            var startTime;
+            var that = this;
+            var runtimeAnimationsArray = this.createRuntimeAnimations(animations);
+            var frameRate = 0;
+            var lastFrameTime = 0;
+            var runner = function(now) {
+                startTime = startTime === undefined ? new Date().getTime() : startTime;
+                startTime = loopTime === undefined ? startTime : loopTime;
+                var timeFromStart = now - startTime;
+
+                frameRate++;
+                if (timeFromStart - lastFrameTime > 1000) {
+                    console.log("start2: " + frameRate);
+                    frameRate = 0;
+                    lastFrameTime = timeFromStart;
+                }
+
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                for (var i = 0; i < runtimeAnimationsArray.length; i++) {
+                    var animation = runtimeAnimationsArray[i];
+                    if ((timeFromStart < animation.getStopTime()) && timeFromStart > animation.getStartTime()) {
+                        var prop = that.apply(timeFromStart, animation);
+                        context.font = prop.scale * prop.fontSize + "px " + prop.font;
+                        context.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
+                        context.fillText(prop.subject, prop.x, prop.y);
+                    }
+                }
+                if ((timeFromStart > stopTime)) {
+                    if (loop) {
+                        loopTime = new Date().getTime();
+                        runtimeAnimationsArray = that.createRuntimeAnimations(animations);
+                    } else {
+                        return;
+                    }
+                }
+                requestId = requestAnimationFrame(runner);
+            };
+            requestId = requestAnimationFrame(runner);
+        };
 
 
     }
     ;
+
 
 
     return AnimatorTemplate;
