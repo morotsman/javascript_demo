@@ -104,6 +104,9 @@ var AnimatorTemplate = (function() {
         var linearImpl = function(property, settings) {
             return function() {
                 return function(properties, timeFromStart) {
+                    if (settings.startTime > timeFromStart) {
+                        return properties;
+                    }
                     if (timeFromStart > (settings.startTime + settings.duration)) {
                         timeFromStart = settings.startTime + settings.duration;
                     }
@@ -118,6 +121,9 @@ var AnimatorTemplate = (function() {
         var staticImpl = function(property, settings) {
             return function() {
                 return function(properties, timeFromStart) {
+                    if (settings.startTime > timeFromStart) {
+                        return properties;
+                    }
                     return properties;
                 };
             };
@@ -126,6 +132,9 @@ var AnimatorTemplate = (function() {
         var cosOrSin = function(property, settings, fun) {
             return function() {
                 return function(properties, timeFromStart) {
+                    if (settings.startTime > timeFromStart) {
+                        return properties;
+                    }
                     if (timeFromStart > (settings.startTime + settings.duration)) {
                         timeFromStart = settings.startTime + settings.duration;
                     }
@@ -176,6 +185,9 @@ var AnimatorTemplate = (function() {
                 var prevFallDistance = 0;
 
                 return function(properties, timeFromStart) {
+                    if (settings.startTime > timeFromStart) {
+                        return properties;
+                    }
                     intialPosition = getOrDefault(intialPosition, properties[property]);
                     ground = getOrDefault(ground, intialPosition + settings.change);
                     if (stop || timeFromStart > (settings.startTime + settings.duration)) {
@@ -226,13 +238,8 @@ var AnimatorTemplate = (function() {
             var selectedEffect = effectSelector(settings.effectName);
             var startTime = settings.startTime;
             var duration = settings.duration;
-            var newEffect = {
-                effect: selectedEffect(property, settings),
-                startTime: startTime,
-                duration: duration
-            };
             var copyOfConfig = copyConfig();
-            copyOfConfig.effects = effects.Cons(newEffect);
+            copyOfConfig.effects = effects.Cons(selectedEffect(property, settings));
             copyOfConfig.startTime = Math.min(copyOfConfig.startTime, startTime);
             copyOfConfig.stopTime = Math.max(copyOfConfig.stopTime, startTime + duration);
             return new TextAnimation(copyOfConfig);
@@ -319,10 +326,7 @@ var AnimatorTemplate = (function() {
 
             var modifiedProperties = properties;
             for (var i = 0; i < animation.runtimeEffects.length; i++) {
-                if (animation.runtimeEffects[i].startTime < timeFromStart) {
-                    modifiedProperties = animation.runtimeEffects[i].effect(modifiedProperties, timeFromStart);
-                    //console.log(i + " " + modifiedProperties.y);
-                }
+                modifiedProperties = animation.runtimeEffects[i](modifiedProperties, timeFromStart);
             }
 
             return modifiedProperties;
@@ -333,11 +337,7 @@ var AnimatorTemplate = (function() {
                 var copyOfAnimations = animation.copy();
 
                 copyOfAnimations.runtimeEffects = animation.getEffects().foldLeft(new Array(), function(acc, effect) {
-                    acc.push({
-                        effect: effect.effect(),
-                        startTime: effect.startTime,
-                        duration: effect.duration
-                    });
+                    acc.push(effect());
                     return acc;
 
                 });

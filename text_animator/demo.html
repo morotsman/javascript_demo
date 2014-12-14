@@ -147,7 +147,7 @@
 
                 var animatorTemplate1 = new AnimatorTemplate({canvas: canvas1});
 
-                var animatorTemplate2 = demoZeitStream.take(200).foldLeft(animatorTemplate1, function(animator, v) {
+                var animatorTemplate2 = demoZeitStream.take(30).foldLeft(animatorTemplate1, function(animator, v) {
                     return animator.animate(
                             function(animation) {
                                 return animation
