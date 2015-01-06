@@ -70,7 +70,7 @@ var AnimatorTemplate = (function() {
                 duration: duration
             };
         };
-
+       
         this.font = function(font) {
             var copyOfConfig = copyConfig();
             copyOfConfig.font = font;
@@ -218,28 +218,52 @@ var AnimatorTemplate = (function() {
 
         };
 
+        var mapImpl = function(settings, fun) {
+            return function() {
+                return function(properties, timeFromStart) {
+                    if (settings.startTime > timeFromStart) {
+                        return properties;
+                    }
+                    if (timeFromStart > (settings.startTime + settings.duration)) {
+                        timeFromStart = settings.startTime + settings.duration;
+                    }
+                    return fun(properties, settings, timeFromStart);
+                };
+            };
+        };
+
+        var availableEffects = {
+            fall: fallImpl,
+            sin: sinImpl,
+            cos: cosImpl,
+            static: staticImpl,
+            linear: linearImpl,
+            random: randomImpl
+        };
+
+        var randomImpl = function(property, settings) {
+            return function() {
+                return function(properties, timeFromStart) {
+                    if (settings.startTime > timeFromStart) {
+                        return properties;
+                    }
+                    return properties;
+                };
+            };
+        };
+
         var effectSelector = function(effect) {
-            if (effect === "fall") {
-                return fallImpl;
-            } else if (effect === "sin") {
-                return sinImpl;
-            } else if (effect === "cos") {
-                return cosImpl;
-            } else if (effect === "static") {
-                return staticImpl;
-            } else {
-                return linearImpl;
-            }
+            return getOrDefault(availableEffects[effect], linearImpl);
         };
 
 
 
-        var effect = function(property, settings) {
+        var effect = function(property, settings, fun) {
             var selectedEffect = effectSelector(settings.effectName);
             var startTime = settings.startTime;
             var duration = settings.duration;
             var copyOfConfig = copyConfig();
-            copyOfConfig.effects = effects.Cons(selectedEffect(property, settings));
+            copyOfConfig.effects = effects.Cons(selectedEffect(property, settings, fun));
             copyOfConfig.startTime = Math.min(copyOfConfig.startTime, startTime);
             copyOfConfig.stopTime = Math.max(copyOfConfig.stopTime, startTime + duration);
             return new TextAnimation(copyOfConfig);
@@ -254,6 +278,16 @@ var AnimatorTemplate = (function() {
 
         this.scale = function(settings) {
             return effect("scale", settings);
+        };
+
+        this.map = function(settings, fun) {
+            var startTime = settings.startTime;
+            var duration = settings.duration;
+            var copyOfConfig = copyConfig();
+            copyOfConfig.effects = effects.Cons(mapImpl(settings, fun));
+            copyOfConfig.startTime = Math.min(copyOfConfig.startTime, startTime);
+            copyOfConfig.stopTime = Math.max(copyOfConfig.stopTime, startTime + duration);
+            return new TextAnimation(copyOfConfig);
         };
 
         this.scrollX = function(settings) {
@@ -319,8 +353,7 @@ var AnimatorTemplate = (function() {
                 window.msCancelAnimationFrame;
 
         var requestId;
-
-        //TODO borde sortera effekter efter starttid
+        
         this.apply = function(timeFromStart, animation) {
             var properties = animation.getProperties();
 
@@ -351,87 +384,8 @@ var AnimatorTemplate = (function() {
             cancelAnimationFrame(requestId);
             context.clearRect(0, 0, canvas.width, canvas.height);
         };
-        
-        /*
-         * TODO check this one on linux
-        this.start = function() {
-            var stopTime = animations.foldLeft(0, function(acc, animation) {
-                return Math.max(acc, animation.getStopTime());
-            });
-            var loopTime;
-            var startTime;
-            var that = this;
-            var runtimeAnimationsArray = this.createRuntimeAnimations(animations);
-            var frameRate = 0;
-            var lastFrameTime = 0;
-            var runner = function(now) {
-
-                startTime = startTime === undefined ? new Date().getTime() : startTime;
-                startTime = loopTime === undefined ? startTime : loopTime;
-
-                var timeFromStart = now - startTime;
-
-                frameRate++;
-                if (timeFromStart - lastFrameTime > 1000) {
-                    console.log("start:" + frameRate);
-                    frameRate = 0;
-                    lastFrameTime = timeFromStart;
-                }
-
-                var tcanvas = document.createElement('canvas'); //tcanvas must be in global scope
 
 
-                context.clearRect(0, 0, canvas.width, canvas.height);
-
-
-                var tctx = tcanvas.getContext('2d');
-                for (var i = 0; i < runtimeAnimationsArray.length; i++) {
-                    var animation = runtimeAnimationsArray[i];
-                    if ((timeFromStart < animation.getStopTime()) && timeFromStart > animation.getStartTime()) {
-
-
-                        var prop = that.apply(timeFromStart, animation);
-
-
-
-                        tctx.font = prop.fontSize + "px " + prop.font;
-                        tctx.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
-
-                        tcanvas.width = tctx.measureText(prop.subject).width;
-                        tcanvas.height = prop.fontSize;
-
-                        tctx.font = prop.fontSize + "px " + prop.font;
-                        tctx.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
-                        tctx.fillText(prop.subject, 0, tcanvas.height);
-
-                        if (prop.scale != 1) {
-                            context.save();
-                            context.scale(prop.scale, prop.scale);
-
-                            context.drawImage(tcanvas, prop.x / prop.scale, prop.y / prop.scale);
-                            context.restore();
-                        } else {
-                            context.drawImage(tcanvas, prop.x / prop.scale, prop.y / prop.scale);
-                        }
-                    }
-                }
-
-                //context.drawImage(tcanvas, 200, 200);
-
-                if ((timeFromStart > stopTime)) {
-                    if (loop) {
-                        loopTime = new Date().getTime();
-                        runtimeAnimationsArray = that.createRuntimeAnimations(animations);
-                    } else {
-                        return;
-                    }
-                }
-
-                requestId = requestAnimationFrame(runner);
-            };
-            requestId = requestAnimationFrame(runner);
-        };
-        */
 
         this.start = function() {
             var stopTime = animations.foldLeft(0, function(acc, animation) {
