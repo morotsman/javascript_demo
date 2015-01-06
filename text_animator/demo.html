@@ -77,13 +77,19 @@
                     return seed + 1;
                 });
 
+
                 var primes = new Stream()
-                        .generateFromStream(positiveNumbers.tail(), function(stream) {
+                        .generateFromStream(positiveNumbers.tail().tail(), function(stream) {
                     return stream.tail().filter(function(x) {
                         return x % stream.head() !== 0;
                     });
                 });
 
+                primes
+                        .take(10)
+                        .forEach(function(i) {
+                    console.log(i);
+                });
 
 
 
@@ -143,14 +149,14 @@
                     return $(".active")
                             .attr('id');
                 }
-                
-                var slide1 = new AnimatorTemplate({canvas: canvas1}).animate(function(animation){
+
+                var slide1 = new AnimatorTemplate({canvas: canvas1}).animate(function(animation) {
                     return animation
                             .subject("Demo Zeit")
                             .font("Arial")
                             .fontSize(50)
-                            .position({x:800, y:50})
-                            .scrollX({startTime: 0, duration:4000, change:-1200});
+                            .position({x: 800, y: 50})
+                            .scrollX({startTime: 0, duration: 4000, change: -1200});
                 }).loop().create();
 
                 var animatorTemplate1 = new AnimatorTemplate({canvas: canvas2});
