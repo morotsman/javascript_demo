@@ -86,14 +86,6 @@
                     });
                 });
 
-                new Animator2(1,2,3,"hepp",5,6,7,8,9,10,11,12,13)
-                        .take(5)
-                        .forEach(function(i) {
-                    console.log(i);
-                });
-
-
-
                 var letterStreamCreator = function(letters) {
                     return new Stream()
                             .generate(0, function(seed) {
@@ -113,115 +105,81 @@
                 };
 
 
-
-
-                var demoZeitStream =
-                        positiveNumbers
-                        .zip(letterStreamCreator(["D", "E", "M", "O", " ", "Z", "E", "I", "T", ". "]))
-                        .map(function(v) {
-                    return {index: v.one, word: v.two};
-                });
-
-                var mitStream =
-                        positiveNumbers
-                        .zip(letterStreamCreator(["M", "I", "T", " ", "N", "I", "K", "L", "A", "S"]))
-                        .map(function(v) {
-                    return {index: v.one, word: v.two};
-                });
-
-                var niklasStream =
-                        positiveNumbers
-                        .zip(letterStreamCreator([]))
-                        .map(function(v) {
-                    return {index: v.one, word: v.two};
-                });
-
-
-
-                var canvas1 = document.getElementById("canvas1");
-                var ctx = canvas1.getContext("2d");
-
-                var canvas2 = document.getElementById("canvas2");
-                var ctx2 = canvas2.getContext("2d");
-
-
-
                 var getActiveSlide = function() {
                     return $(".active")
                             .attr('id');
                 }
 
-                var slide1 = new AnimatorTemplate({canvas: canvas1}).animate(function(animation) {
+                var canvas1 = document.getElementById("canvas1");
+                var slide1 = new Animator2("Demo zeit", "hepp").map(function(animation, index) {
                     return animation
-                            .subject("Demo Zeit")
                             .font("Arial")
                             .fontSize(50)
                             .position({x: 800, y: 50})
-                            .scrollX({startTime: 0, duration: 4000, change: -1200});
-                }).loop().create();
-
-                var animatorTemplate1 = new AnimatorTemplate({canvas: canvas2});
-
-                var animatorTemplate2 = demoZeitStream.take(100).foldLeft(animatorTemplate1, function(animator, v) {
-                    return animator.animate(
-                            function(animation) {
-                                return animation
-                                        .subject(v.word)
-                                        .font("Arial")
-                                        .fontSize(25)
-                                        .position({x: 300, y: 50})
-
-                                        //tube
-                                        .scrollX({startTime: v.index * 500, duration: 49000, change: 200, effectName: "sin", period: 7000})
-                                        .scale({startTime: v.index * 500, duration: 49000, change: -0.5, effectName: "cos", period: 7000})
-                                        .scrollY({startTime: v.index * 500, duration: 49000, change: -25, effectName: "cos", period: 7000})
-                                        .scrollY({startTime: v.index * 500 + 7000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
-                                        .scrollY({startTime: v.index * 500 + 14000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
-                                        .scrollY({startTime: v.index * 500 + 21000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
-                                        .scrollY({startTime: v.index * 500 + 28000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
-                                        .scrollY({startTime: v.index * 500 + 35000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
-                                        .scrollY({startTime: v.index * 500 + 42000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
-                                        .fade({startTime: v.index * 500 + 48500, duration: 500, change: -1})
-
-                                        //spiral
-                                        .fade({startTime: v.index * 500 + 2 * 49000, duration: 500, change: 1})
-                                        .scale({startTime: v.index * 500 + 2 * 49000, duration: 1, change: 0.5})
-                                        .map({startTime: v.index * 500 + 2 * 49000, duration: 49000, period: 7000, change: 100},
-                                function(properties, settings, timeFromStart) {
-                                    var scale = settings.period / (2 * Math.PI);
-                                    var time = (timeFromStart - settings.startTime);
-                                    var angle = 10 + time / scale;
-                                    var change = (1 + 5 * angle) * Math.cos(angle);
-                                    properties.x = properties.x + change;
-                                    return properties;
-                                })
-
-                                        .scale({startTime: v.index * 500 + 2 * 49000, duration: 49000, change: -0.5, effectName: "sin", period: 7000})
-                                        .map({startTime: v.index * 500 + 2 * 49000, duration: 49000, period: 7000, change: 100},
-                                function(properties, settings, timeFromStart) {
-                                    var scale = settings.period / (2 * Math.PI);
-                                    var time = (timeFromStart - settings.startTime);
-                                    var angle = 10 + time / scale;
-                                    var change = (1 + 1 * angle) * Math.sin(angle);
-                                    properties.y = properties.y + change;
-                                    return properties;
-                                })
-                                        .scrollY({startTime: v.index * 500 + 2 * 49000, duration: 49000, change: -450, effectName: "liner"})
+                            .scrollX({startTime: 2000 * index, duration: 4000, change: -1200});
+                }).animate(canvas1, true);
 
 
-                            });
-                });
+                var canvas2 = document.getElementById("canvas2");
+                var demoZeitArray = ["D", "E", "M", "O", " ", "Z", "E", "I", "T", ". "];
+                var slide2 = new Animator2()
+                        .generate(0, function(seed) {
+                    return seed + 1;
+                })
+                        .take(100)
+                        .map(function(animation, index) {
+                    return animation.subject(demoZeitArray[index % demoZeitArray.length]);
+                })
+                        .map(function(animation, index) {
+                    return animation
+                            .font("Arial")
+                            .fontSize(25)
+                            .position({x: 300, y: 50})
 
+                            //tube
+                            .scrollX({startTime: index * 500, duration: 49000, change: 200, effectName: "sin", period: 7000})
+                            .scale({startTime: index * 500, duration: 49000, change: -0.5, effectName: "cos", period: 7000})
+                            .scrollY({startTime: index * 500, duration: 49000, change: -25, effectName: "cos", period: 7000})
+                            .scrollY({startTime: index * 500 + 7000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
+                            .scrollY({startTime: index * 500 + 14000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
+                            .scrollY({startTime: index * 500 + 21000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
+                            .scrollY({startTime: index * 500 + 28000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
+                            .scrollY({startTime: index * 500 + 35000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
+                            .scrollY({startTime: index * 500 + 42000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
+                            .fade({startTime: index * 500 + 48500, duration: 500, change: -1})
 
+                           
+                })
+                        .map(function(animation, index) {
+                    return animation
+                            //spiral
+                            .fade({startTime: index * 250 + 2 * 49000, duration: 500, change: 1})
+                            .scale({startTime: index * 250 + 2 * 49000, duration: 1, change: 0.5})
+                            .map({startTime: index * 250 + 2 * 49000, duration: 24500, period: 3500, change: 100},
+                    function(properties, settings, timeFromStart) {
+                        var scale = settings.period / (2 * Math.PI);
+                        var time = (timeFromStart - settings.startTime);
+                        var angle = 10 + time / scale;
+                        var change = (1 + 5 * angle) * Math.cos(angle);
+                        properties.x = properties.x + change;
+                        return properties;
+                    })
 
+                            .scale({startTime: index * 250 + 2 * 49000, duration: 24500, change: -0.5, effectName: "sin", period: 3500})
+                            .map({startTime: index * 250 + 2 * 49000, duration: 24500, period: 3500, change: 100},
+                    function(properties, settings, timeFromStart) {
+                        var scale = settings.period / (2 * Math.PI);
+                        var time = (timeFromStart - settings.startTime);
+                        var angle = 10 + time / scale;
+                        var change = (1 + 1 * angle) * Math.sin(angle);
+                        properties.y = properties.y + change;
+                        return properties;
+                    })
+                            .scrollY({startTime: index * 250 + 2 * 49000, duration: 24500, change: -450, effectName: "linear"})
+                })
+                        .animate(canvas2, true);
 
-
-                var animator1 = animatorTemplate2
-                        .loop()
-                        .create();
-
-
-
+      
 
 
 
@@ -229,12 +187,12 @@
 
 
                 var animate = function() {
-                    animator1.stop();
+                    slide2.stop();
                     slide1.stop();
                     if (getActiveSlide() === "animated_1") {
                         slide1.start();
                     } else if (getActiveSlide() === "animated_2") {
-                        animator1.start();
+                        slide2.start();
                     }
                 };
 

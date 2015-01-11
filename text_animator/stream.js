@@ -16,21 +16,6 @@ var Stream = (function() {
 
     function StreamImpl() {
 
-        var init = function(a) {
-            //console.log("init");
-            if (a.length === 0) {
-                return new Empty();
-            } else {
-                return new Cons(a[0], lazy(function() {
-                    return init(a.splice(1));
-                }));//be lazy
-            }
-        };
-
-        this.stream = function(_source) {
-            return init(_source.slice(0));//TODO, better way to not destroy original array? here I make a copy
-        };
-
         this.generate = function(seed, fun) {
             var loop = function(seed) {
                 return new Cons(seed, lazy(function() {
@@ -156,6 +141,10 @@ var Stream = (function() {
 
             return loop(this, new Array());
         };
+        
+        this.cons = function(head){
+            return new Cons(head, this);
+        };        
     }
     ;
 

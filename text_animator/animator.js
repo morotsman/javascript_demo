@@ -7,7 +7,7 @@ var AnimatorTemplate = (function() {
     function AnimatorTemplate(_config) {
         var canvas = _config.canvas;
         var context = getOrDefault(_config.context, canvas.getContext("2d"));
-        var animations = getOrDefault(_config.animations, new List([]));
+        var animations = getOrDefault(_config.animations, new Stream());
         var loop = getOrDefault(_config.loop, false);
 
         var copyConfig = function() {
@@ -27,7 +27,7 @@ var AnimatorTemplate = (function() {
 
         this.animate = function(fun) {
             var animation = fun(new TextAnimation({}));
-            var newAnimations = animations.Cons(animation);
+            var newAnimations = animations.cons(animation);
             var copyOfConfig = copyConfig();
             copyOfConfig.animations = newAnimations;
             return new AnimatorTemplate(copyOfConfig);
