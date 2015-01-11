@@ -111,13 +111,13 @@
                 }
 
                 var canvas1 = document.getElementById("canvas1");
-                var slide1 = new Animator2("Demo zeit").map(function(animation, index) {
+                var slide1 = new Animator2("Demo zeit", "hepp").map(function(animation, index) {
                     return animation
                             .font("Arial")
                             .fontSize(50)
                             .position({x: 800, y: 50})
                             .scrollX({startTime: 2000 * index, duration: 4000, change: -1200});
-                }).animate(canvas1, true);
+                }).split().animate(canvas1, true);
 
 
                 var canvas2 = document.getElementById("canvas2");

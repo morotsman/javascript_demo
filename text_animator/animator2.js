@@ -16,7 +16,7 @@ var Animator2 = (function() {
     var isFunction = function(obj) {
         return !!(obj && obj.constructor && obj.call && obj.apply);
     };
-    
+
     var effetcImpls = new Effects();
 
     function Effects() {
@@ -165,6 +165,21 @@ var Animator2 = (function() {
                 duration: duration
             };
         };
+        
+        this.getSettings = function() {
+            return {
+                effects: effects,
+                subject: subject,
+                position: position,
+                font: font,
+                fontSize: fontSize,
+                alpha: alpha,
+                startTime: startTime,
+                stopTime: stopTime,
+                scale: scale,
+                duration: duration
+            };
+        };        
 
         this.font = function(font) {
             var copyOfConfig = copyConfig();
@@ -350,7 +365,7 @@ var Animator2 = (function() {
         this.stop = function() {
             cancelAnimationFrame(requestId);
             context.clearRect(0, 0, canvas.width, canvas.height);
-            return getOrDefault(timeFromStart,0);
+            return getOrDefault(timeFromStart, 0);
         };
 
 
@@ -526,6 +541,31 @@ var Animator2 = (function() {
             };
 
             return loop(this, new Array());
+        };
+
+        this.split = function() {
+            var that = this;
+            var loop = function(head, index) {
+                var letters = head.getProperties().subject.split('');
+                if (letters.length === index) {
+                    var settings = head.getSettings();
+                    settings.subject = letters[index];
+                    return new Cons(new TextAnimation(settings), lazy(function() {
+                        return that.tail().split();
+                    }));
+                }
+                var settings = head.getSettings();
+                settings.subject = letters[index];
+                return new Cons(new TextAnimation(settings), lazy(function() {
+                    return loop(head, index + 1);
+                }));
+            };
+
+            if (this.isEmpty()) {
+                return this;
+            }
+
+            return loop(this.head(), 0);
         };
 
         this.cons = function(head) {
