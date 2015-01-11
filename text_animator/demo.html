@@ -111,7 +111,7 @@
                 }
 
                 var canvas1 = document.getElementById("canvas1");
-                var slide1 = new Animator2("Demo zeit", "hepp").map(function(animation, index) {
+                var slide1 = new Animator2("Demo zeit").map(function(animation, index) {
                     return animation
                             .font("Arial")
                             .fontSize(50)
@@ -187,12 +187,12 @@
 
 
                 var animate = function() {
-                    slide2.stop();
+                    var timeFromStart = slide2.stop();
                     slide1.stop();
                     if (getActiveSlide() === "animated_1") {
                         slide1.start();
                     } else if (getActiveSlide() === "animated_2") {
-                        slide2.start();
+                        slide2.start(new Date().getTime() - timeFromStart);
                     }
                 };
 
