@@ -142,7 +142,8 @@ var Animator2 = (function() {
 
         var effects = getOrDefault(_config.effects, new List([]));
         var subject = getOrDefault(_config.subject, "");
-        var position = getOrDefault(_config.position, {x: 0, y: 0});
+        var x = getOrDefault(_config.x, 0);
+        var y = getOrDefault(_config.y, 0);
         var font = getOrDefault(_config.font, "Arial");
         var fontSize = getOrDefault(_config.fontSize, 25);
         var alpha = getOrDefault(_config.alpha, 1);
@@ -155,7 +156,8 @@ var Animator2 = (function() {
             return {
                 effects: effects,
                 subject: subject,
-                position: position,
+                x: x,
+                y: y,
                 font: font,
                 fontSize: fontSize,
                 alpha: alpha,
@@ -166,11 +168,13 @@ var Animator2 = (function() {
             };
         };
         
+        //remove
         this.getSettings = function() {
             return {
                 effects: effects,
                 subject: subject,
-                position: position,
+                x: x,
+                y: y,
                 font: font,
                 fontSize: fontSize,
                 alpha: alpha,
@@ -199,9 +203,15 @@ var Animator2 = (function() {
             return new TextAnimation(copyOfConfig);
         };
 
-        this.position = function(position) {
+        this.x = function(x) {
             var copyOfConfig = copyConfig();
-            copyOfConfig.position = position;
+            copyOfConfig.x = x;
+            return new TextAnimation(copyOfConfig);
+        };
+
+        this.y = function(y) {
+            var copyOfConfig = copyConfig();
+            copyOfConfig.y = y;
             return new TextAnimation(copyOfConfig);
         };
 
@@ -304,18 +314,6 @@ var Animator2 = (function() {
             return effects;
         };
 
-        this.getProperties = function() {
-            return {
-                subject: subject,
-                x: position.x,
-                y: position.y,
-                scale: scale,
-                alpha: alpha,
-                font: font,
-                fontSize: fontSize
-            };
-        };
-
         this.copy = function() {
             var copyOfConfig = copyConfig();
             return new TextAnimation(copyOfConfig);
@@ -337,7 +335,7 @@ var Animator2 = (function() {
         var timeFromStart;
 
         this.apply = function(timeFromStart, animation) {
-            var properties = animation.getProperties();
+            var properties = animation.getSettings();
 
             var modifiedProperties = properties;
             for (var i = 0; i < animation.runtimeEffects.length; i++) {
@@ -396,9 +394,13 @@ var Animator2 = (function() {
                     var animation = runtimeAnimationsArray[i];
                     if ((timeFromStart < animation.getStopTime()) && timeFromStart > animation.getStartTime()) {
                         var prop = that.apply(timeFromStart, animation);
-                        context.font = prop.scale * prop.fontSize + "px " + prop.font;
-                        context.fillStyle = "rgba(255, 0, 0, " + prop.alpha + ")";
-                        context.fillText(prop.subject, prop.x, prop.y);
+                        context.save();
+                        context.font = Math.floor(prop.scale * prop.fontSize) + "px " + prop.font;
+                        context.fillStyle = "rgba(255, 0, 0, " + Math.floor(prop.alpha) + ")";
+                        context.translate(Math.floor(prop.x), Math.floor(prop.y));
+                        context.fillText(prop.subject, 0, 0);
+                        
+                        context.restore();
                     }
                 }
                 if ((timeFromStart > stopTime)) {
@@ -546,7 +548,7 @@ var Animator2 = (function() {
         this.split = function() {
             var that = this;
             var loop = function(head, index) {
-                var letters = head.getProperties().subject.split('');
+                var letters = head.getSettings().subject.split('');
                 if (letters.length === index) {
                     var settings = head.getSettings();
                     settings.subject = letters[index];

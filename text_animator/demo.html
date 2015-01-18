@@ -108,16 +108,19 @@
                 var getActiveSlide = function() {
                     return $(".active")
                             .attr('id');
-                }
+                };
 
                 var canvas1 = document.getElementById("canvas1");
-                var slide1 = new Animator2("Demo zeit", "hepp").map(function(animation, index) {
+                var slide1 = new Animator2("Demo zeit")
+                        //.split()
+                        .map(function(animation, index) {
                     return animation
                             .font("Arial")
                             .fontSize(50)
-                            .position({x: 800, y: 50})
-                            .scrollX({startTime: 2000 * index, duration: 4000, change: -1200});
-                }).split().animate(canvas1, true);
+                            .x(1200)
+                            .y(100)
+                            .scrollX({startTime: 2000 * index, duration: 4000, change: -1100});
+                });
 
 
                 var canvas2 = document.getElementById("canvas2");
@@ -134,8 +137,8 @@
                     return animation
                             .font("Arial")
                             .fontSize(25)
-                            .position({x: 300, y: 50})
-
+                            .x(300)
+                            .y(50)
                             //tube
                             .scrollX({startTime: index * 500, duration: 49000, change: 200, effectName: "sin", period: 7000})
                             .scale({startTime: index * 500, duration: 49000, change: -0.5, effectName: "cos", period: 7000})
@@ -148,7 +151,7 @@
                             .scrollY({startTime: index * 500 + 42000, duration: 2000, change: 80, effectName: "fall", speed: 30, cor: 0})
                             .fade({startTime: index * 500 + 48500, duration: 500, change: -1})
 
-                           
+
                 })
                         .map(function(animation, index) {
                     return animation
@@ -179,20 +182,18 @@
                 })
                         .animate(canvas2, true);
 
-      
-
-
 
                 var slide = 1;
 
-
+                var slide1Animator = slide1.animate(canvas1, true);
                 var animate = function() {
-                    var timeFromStart = slide2.stop();
-                    slide1.stop();
+                    var timeFromStartSlide1 = slide1Animator.stop();
+                    var timeFromStartSlide2 = slide2.stop();
+
                     if (getActiveSlide() === "animated_1") {
-                        slide1.start();
+                        slide1Animator.start(new Date().getTime() - timeFromStartSlide1);
                     } else if (getActiveSlide() === "animated_2") {
-                        slide2.start(new Date().getTime() - timeFromStart);
+                        slide2.start(new Date().getTime() - timeFromStartSlide2);
                     }
                 };
 
@@ -201,6 +202,10 @@
                 });
 
                 animate();
+
+                $(window).keypress(function(e) {
+                    
+                });
 
 
 
