@@ -545,30 +545,48 @@ var Animator2 = (function() {
             return loop(this, new Array());
         };
 
-        this.split = function() {
-            var that = this;
-            var loop = function(head, index) {
-                var letters = head.getSettings().subject.split('');
-                if (letters.length === index) {
-                    var settings = head.getSettings();
-                    settings.subject = letters[index];
-                    return new Cons(new TextAnimation(settings), lazy(function() {
-                        return that.tail().split();
-                    }));
-                }
-                var settings = head.getSettings();
-                settings.subject = letters[index];
-                return new Cons(new TextAnimation(settings), lazy(function() {
-                    return loop(head, index + 1);
-                }));
-            };
+        var getPositions = function (letters, settings) {
+            var canvas = document.createElement('canvas');
+            canvas.width = 0;
+            canvas.height = 0;
+            var ctx = canvas.getContext("2d");           
+            ctx.font=Math.floor(settings.scale * settings.fontSize) + "px " + settings.font;
+            
+            var result = [0];
+            var position = 0;
+            for(var i = 0; i < letters.length; i++){
+                var width = ctx.measureText(letters[i]).width;
+                position = position + width;
+                result.push(position);
+            }
+            
+            return result;
+        };        
 
+        this.split = function (fun) {
             if (this.isEmpty()) {
                 return this;
             }
-
+            
+            var that = this;
+            var subject = this.head().getSettings().subject;
+            var letters = fun===undefined?subject.split(''):fun(subject);
+            var positions = getPositions(letters, this.head().getSettings());
+            var loop = function (head, index) {              
+                var settings = head.getSettings();
+                settings.subject = letters[index];
+                settings.x = settings.x + positions[index];                
+                if (letters.length-1 === index) {
+                    return new Cons(new TextAnimation(settings), lazy(function () {
+                        return that.tail().split(fun);
+                    }));
+                }
+                return new Cons(new TextAnimation(settings), lazy(function () {
+                    return loop(head, index + 1);
+                }));
+            };
             return loop(this.head(), 0);
-        };
+        };  
 
         this.cons = function(head) {
             return new Cons(new TextAnimation({subject: head}), this);
@@ -663,7 +681,10 @@ var Animator2 = (function() {
         return init(Array.prototype.slice.call(arguments, 0));
     }
 
-    return Stream;
+    return {
+            textStream:Stream,
+            animator: Animator
+        };
 
 })();
 
