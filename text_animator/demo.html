@@ -131,7 +131,7 @@
                         .split()
                         .map(function(animation, index){
                             return animation
-                                    .scrollY({startTime: index * 200, duration: 2000, change: 300, effectName: "fall", speed: 30, cor: 0.5})
+                                    .scrollY({startTime: index * 200, duration: 8000, change: 300, effectName: "fall", speed: 30, cor: 0.5})
                         });
                         
                  var rocket = new Animator2.textStream("R","EQ", "UIREJS").
@@ -142,8 +142,8 @@
                                     .x(300-Math.pow(index,2)*7)
                                     .y(500+index*15)
                                     .static({startTime: 0, duration: 8000})
-                                    .scrollY({startTime: 2000, duration: 4000, change: -300, effectName: "sin", period:2*8000})
-                                    .scrollX({startTime: 2000, duration: 4000, change: 300, effectName: "cos", period:2*8000})
+                                    .scrollY({startTime: 2000, duration: 49000*3, change: -300, effectName: "sin", period:2*8000})
+                                    .scrollX({startTime: 2000, duration: 49000*3, change: 300, effectName: "cos", period:2*8000})
                          });
 
 
@@ -208,9 +208,9 @@
 
                 var slide = 1;
 
-                var slide1Animator = new Animator2.animator(slide1, canvas1.getContext("2d"), canvas1, true);
-                var slide2Animator = new Animator2.animator(slide2, canvas2.getContext("2d"), canvas2, true);
-                var rocketAnimator = rocket.animate(canvas1, true);
+                var slide1Animator = new Animator2.animator([slide1], canvas1.getContext("2d"), canvas1, true);
+                var slide2Animator = new Animator2.animator([slide2], canvas2.getContext("2d"), canvas2, true);
+                var rocketAnimator = new Animator2.animator([rocket, slide1,slide2], canvas1.getContext("2d"), canvas1, true);
                 var animate = function() {
                     var timeFromStartSlide1 = slide1Animator.stop();
                     var timeFromStartSlide2 = slide2Animator.stop();

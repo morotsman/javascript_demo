@@ -346,18 +346,28 @@ var Animator2 = (function() {
         };
 
         this.createRuntimeAnimations = function(animations) {
-            return animations.foldLeft(new Array(), function(acc, animation) {
-                var copyOfAnimations = animation.copy();
 
-                copyOfAnimations.runtimeEffects = animation.getEffects().foldLeft(new Array(), function(acc, effect) {
-                    acc.push(effect());
+            var result = new Array();
+            
+            for(var i = 0; i < animations.length; i++){
+                var tmp =  animations[i].foldLeft(new Array(), function(acc, animation) {
+                    var copyOfAnimations = animation.copy();
+
+                    copyOfAnimations.runtimeEffects = animation.getEffects().foldLeft(new Array(), function(acc, effect) {
+                        acc.push(effect());
+                        return acc;
+
+                    });
+
+                    acc.push(copyOfAnimations);
                     return acc;
-
-                });
-
-                acc.push(copyOfAnimations);
-                return acc;
-            });
+                }); 
+                result = result.concat(tmp);
+                
+            }
+            
+            
+            return result;
         };
 
         this.stop = function() {
@@ -369,9 +379,13 @@ var Animator2 = (function() {
 
 
         this.start = function(startTime) {
-            var stopTime = animations.foldLeft(0, function(acc, animation) {
-                return Math.max(acc, animation.getStopTime());
-            });
+            var stopTime = 0; 
+            for(var i = 0; i < animations.length; i++){
+                var currentTime = animations[i].foldLeft(0, function(acc, animation) {
+                    return Math.max(acc, animation.getStopTime());
+                });
+                stopTime = stopTime>currentTime?stopTime:currentTime;
+            }
             var loopTime;
             var that = this;
             var runtimeAnimationsArray = this.createRuntimeAnimations(animations);
