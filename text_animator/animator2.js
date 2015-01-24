@@ -151,6 +151,7 @@ var Animator2 = (function() {
         var duration = getOrDefault(_config.duration, 0);
         var stopTime = getOrDefault(_config.stopTime, 0);
         var scale = getOrDefault(_config.scale, 1);
+        var angle = getOrDefault(_config.angle, 0);
 
         var copyConfig = function() {
             return {
@@ -164,26 +165,21 @@ var Animator2 = (function() {
                 startTime: startTime,
                 stopTime: stopTime,
                 scale: scale,
-                duration: duration
+                duration: duration,
+                angle: angle
             };
         };
         
         //remove
         this.getSettings = function() {
-            return {
-                effects: effects,
-                subject: subject,
-                x: x,
-                y: y,
-                font: font,
-                fontSize: fontSize,
-                alpha: alpha,
-                startTime: startTime,
-                stopTime: stopTime,
-                scale: scale,
-                duration: duration
-            };
+            return copyConfig();
         };        
+        
+        this.angle = function(angle){
+            var copyOfConfig = copyConfig();
+            copyOfConfig.angle = angle;
+            return new TextAnimation(copyOfConfig); 
+        };
 
         this.font = function(font) {
             var copyOfConfig = copyConfig();
@@ -287,6 +283,10 @@ var Animator2 = (function() {
         this.scrollX = function(settings) {
             return effect("x", settings);
         };
+        
+        this.rotate = function(settings){
+            return effect("angle", settings);
+        };
 
         this.scrollY = function(settings) {
             return effect("y", settings);
@@ -320,7 +320,7 @@ var Animator2 = (function() {
         };
     }
 
-    function Animator(animations, context, canvas, loop) {
+    function Animator(context, canvas, loop) {
         var requestAnimationFrame = window.requestAnimationFram ||
                 window.mozRequestAnimationFrame ||
                 window.webkitRequestAnimationFrame ||
@@ -378,7 +378,7 @@ var Animator2 = (function() {
 
 
 
-        this.start = function(startTime) {
+        this.start = function(animations, startTime) {
             var stopTime = 0; 
             for(var i = 0; i < animations.length; i++){
                 var currentTime = animations[i].foldLeft(0, function(acc, animation) {
@@ -411,7 +411,14 @@ var Animator2 = (function() {
                         context.save();
                         context.font = Math.floor(prop.scale * prop.fontSize) + "px " + prop.font;
                         context.fillStyle = "rgba(255, 0, 0, " + Math.floor(prop.alpha) + ")";
-                        context.translate(Math.floor(prop.x), Math.floor(prop.y));
+                        
+                        if(prop.angle !== 0){
+                            context.translate(Math.floor(prop.x), Math.floor(prop.y));
+                            context.rotate(prop.angle);
+                        }else{
+                           context.translate(Math.floor(prop.x), Math.floor(prop.y)); 
+                        }
+                        
                         context.fillText(prop.subject, 0, 0);
                         
                         context.restore();

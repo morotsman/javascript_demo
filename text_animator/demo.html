@@ -118,37 +118,41 @@
 
 
                 var canvas1 = document.getElementById("canvas1");
-                var slide1 = 
-                        new Animator2.textStream("Demo zeit")
-                        .map(function(animation, index) {
-                            return animation
-                            .font("Arial")
-                            .fontSize(100)
-                            .x(300)
-                            .y(100);
-                            
-                        })
-                        .split()
-                        .map(function(animation, index){
-                            return animation
-                                    .scrollY({startTime: index * 200, duration: 8000, change: 300, effectName: "fall", speed: 30, cor: 0.5})
-                        });
-                        
+
                  var rocket = new Animator2.textStream("R","EQ", "UIREJS").
                          map(function(animation, index){
                             return animation
                                     .font("Arial")
                                     .fontSize(20)
-                                    .x(300-Math.pow(index,2)*7)
+                                    .x(400-Math.pow(index,2)*7)
                                     .y(500+index*15)
-                                    .static({startTime: 0, duration: 8000})
-                                    .scrollY({startTime: 2000, duration: 49000*3, change: -300, effectName: "sin", period:2*8000})
-                                    .scrollX({startTime: 2000, duration: 49000*3, change: 300, effectName: "cos", period:2*8000})
+                                    .static({startTime: 0, duration: 1000})
+                                    .scrollY({startTime: 1000, duration: 4500, change: -300, effectName: "sin", period: 14000})
+                                    .rotate({startTime: 5000, duration:1000, change: 90*Math.PI/180})
+                                    .scrollX({startTime: 5000, duration:1000, change: index==0?10:0})
+                                    .scrollY({startTime: 5000, duration:1000, change: -20*Math.pow(index,1.5)})
+                                    .scrollY({startTime: 6000, duration: 49000, change: -50, effectName: "sin", period: 7000})
                          });
+                         
+                 var background = new Animator2
+                         .textStream()
+                         .generate("REQUIRE JS.REQUIRE JS.                                                                         REQUIRE JS.REQUIRE JS.", function(seed){
+                            return seed;
+                         })
+                         .take(1000)
+                         .map(function(animation,index){
+                            return animation
+                                    .font("Arial")
+                                    .fontSize(20)
+                                    .x(1000)
+                                    .y(randomNumber(-200,-100))
+                                    .scrollX({startTime: 6000+(index*50), duration:2000, change:-1000})
+                                    .rotate({startTime: 6000, duration:1, change: 90*Math.PI/180})
+                         }); 
 
 
                 var canvas2 = document.getElementById("canvas2");
-                var demoZeitArray = ["D", "E", "M", "O", " ", "Z", "E", "I", "T", ". "];
+                var demoZeitArray = ["R", "E", "Q", "U", "I", "R", "E", " ", "J", "S "];
                 var slide2 = new Animator2.textStream()
                         .generate(0, function(seed) {
                     return seed + 1;
@@ -208,19 +212,16 @@
 
                 var slide = 1;
 
-                var slide1Animator = new Animator2.animator([slide1], canvas1.getContext("2d"), canvas1, true);
-                var slide2Animator = new Animator2.animator([slide2], canvas2.getContext("2d"), canvas2, true);
-                var rocketAnimator = new Animator2.animator([rocket, slide1,slide2], canvas1.getContext("2d"), canvas1, true);
+                var slide2Animator = new Animator2.animator(canvas2.getContext("2d"), canvas2, true);
+                var rocketAnimator = new Animator2.animator(canvas1.getContext("2d"), canvas1, true);
                 var animate = function() {
-                    var timeFromStartSlide1 = slide1Animator.stop();
                     var timeFromStartSlide2 = slide2Animator.stop();
                     rocketAnimator.stop();
 
                     if (getActiveSlide() === "animated_1") {
-                        //slide1Animator.start(new Date().getTime() - timeFromStartSlide1);
-                       rocketAnimator.start();
+                       rocketAnimator.start([rocket, background]);
                     } else if (getActiveSlide() === "animated_2") {
-                        slide2Animator.start(new Date().getTime() - timeFromStartSlide2);
+                        slide2Animator.start([slide2], new Date().getTime() - timeFromStartSlide2);
                     }
                 };
 
