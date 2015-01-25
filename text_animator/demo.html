@@ -134,21 +134,23 @@
                                     .scrollY({startTime: 6000, duration: 49000, change: -50, effectName: "sin", period: 7000})
                          });
                          
-                 var background = new Animator2
+                 var background1 = new Animator2
                          .textStream()
                          .generate("REQUIRE JS.REQUIRE JS.                                                                         REQUIRE JS.REQUIRE JS.", function(seed){
                             return seed;
                          })
-                         .take(1000)
+                         .take(120)
                          .map(function(animation,index){
                             return animation
                                     .font("Arial")
                                     .fontSize(20)
                                     .x(1000)
                                     .y(randomNumber(-200,-100))
-                                    .scrollX({startTime: 6000+(index*50), duration:2000, change:-1000})
-                                    .rotate({startTime: 6000, duration:1, change: 90*Math.PI/180})
+                                    .scrollX({startTime: 6000 + index*50, duration:2000, change:-1000})
+                                    .rotate({startTime: 5999, duration:1, change: 90*Math.PI/180})
                          }); 
+                         
+                        
 
 
                 var canvas2 = document.getElementById("canvas2");
@@ -219,9 +221,9 @@
                     rocketAnimator.stop();
 
                     if (getActiveSlide() === "animated_1") {
-                       rocketAnimator.start([rocket, background]);
+                       rocketAnimator.start([{animation:rocket, loop:true}, {animation:background1, loop: true}]);
                     } else if (getActiveSlide() === "animated_2") {
-                        slide2Animator.start([slide2], new Date().getTime() - timeFromStartSlide2);
+                        slide2Animator.start([{animation:slide2}], new Date().getTime() - timeFromStartSlide2);
                     }
                 };
 

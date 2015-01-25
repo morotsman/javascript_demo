@@ -169,16 +169,16 @@ var Animator2 = (function() {
                 angle: angle
             };
         };
-        
+
         //remove
         this.getSettings = function() {
             return copyConfig();
-        };        
-        
-        this.angle = function(angle){
+        };
+
+        this.angle = function(angle) {
             var copyOfConfig = copyConfig();
             copyOfConfig.angle = angle;
-            return new TextAnimation(copyOfConfig); 
+            return new TextAnimation(copyOfConfig);
         };
 
         this.font = function(font) {
@@ -283,8 +283,8 @@ var Animator2 = (function() {
         this.scrollX = function(settings) {
             return effect("x", settings);
         };
-        
-        this.rotate = function(settings){
+
+        this.rotate = function(settings) {
             return effect("angle", settings);
         };
 
@@ -348,9 +348,9 @@ var Animator2 = (function() {
         this.createRuntimeAnimations = function(animations) {
 
             var result = new Array();
-            
-            for(var i = 0; i < animations.length; i++){
-                var tmp =  animations[i].foldLeft(new Array(), function(acc, animation) {
+
+            for (var i = 0; i < animations.length; i++) {
+                var tmp = animations[i].animation.foldLeft(new Array(), function(acc, animation) {
                     var copyOfAnimations = animation.copy();
 
                     copyOfAnimations.runtimeEffects = animation.getEffects().foldLeft(new Array(), function(acc, effect) {
@@ -361,77 +361,73 @@ var Animator2 = (function() {
 
                     acc.push(copyOfAnimations);
                     return acc;
-                }); 
-                result = result.concat(tmp);
-                
+                });
+                result.push(tmp);
+
             }
-            
-            
+
+
             return result;
         };
 
         this.stop = function() {
             cancelAnimationFrame(requestId);
             context.clearRect(0, 0, canvas.width, canvas.height);
-            return getOrDefault(timeFromStart, 0);
+            return getOrDefault(timeFromStart, 0);//TODO fix, this will cause an error, each animation must have it's own
         };
 
 
 
         this.start = function(animations, startTime) {
-            var stopTime = 0; 
-            for(var i = 0; i < animations.length; i++){
-                var currentTime = animations[i].foldLeft(0, function(acc, animation) {
+            for (var i = 0; i < animations.length; i++) {
+                var stopTime = animations[i].animation.foldLeft(0, function(acc, animation) {
                     return Math.max(acc, animation.getStopTime());
                 });
-                stopTime = stopTime>currentTime?stopTime:currentTime;
+                animations[i].animation.stopTime = stopTime;
             }
-            var loopTime;
             var that = this;
             var runtimeAnimationsArray = this.createRuntimeAnimations(animations);
-            var frameRate = 0;
-            var lastFrameTime = 0;
             var runner = function(now) {
-                startTime = startTime === undefined ? new Date().getTime() : startTime;
-                startTime = loopTime === undefined ? startTime : loopTime;
-                timeFromStart = now - startTime;
-
-                frameRate++;
-                if (timeFromStart - lastFrameTime > 1000) {
-                    console.log("frame rate: " + frameRate);
-                    frameRate = 0;
-                    lastFrameTime = timeFromStart;
-                }
 
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 for (var i = 0; i < runtimeAnimationsArray.length; i++) {
-                    var animation = runtimeAnimationsArray[i];
-                    if ((timeFromStart < animation.getStopTime()) && timeFromStart > animation.getStartTime()) {
-                        var prop = that.apply(timeFromStart, animation);
-                        context.save();
-                        context.font = Math.floor(prop.scale * prop.fontSize) + "px " + prop.font;
-                        context.fillStyle = "rgba(255, 0, 0, " + Math.floor(prop.alpha) + ")";
-                        
-                        if(prop.angle !== 0){
-                            context.translate(Math.floor(prop.x), Math.floor(prop.y));
-                            context.rotate(prop.angle);
-                        }else{
-                           context.translate(Math.floor(prop.x), Math.floor(prop.y)); 
+                    animations[i].animation.startTime = animations[i].animation.startTime === undefined ? new Date().getTime() : animations[i].animation.startTime;
+                    animations[i].animation.startTime = animations[i].animation.loopTime === undefined ? animations[i].animation.startTime : animations[i].animation.loopTime;
+                    animations[i].animation.timeFromStart = now - animations[i].animation.startTime;                   
+                    for (var j = 0; j < runtimeAnimationsArray[i].length; j++) {
+                        var animation = runtimeAnimationsArray[i][j];
+                        if ((animations[i].animation.timeFromStart < animation.getStopTime()) && animations[i].animation.timeFromStart > animation.getStartTime()) {
+                            var prop = that.apply(animations[i].animation.timeFromStart, animation);
+                            context.save();
+                            context.font = Math.floor(prop.scale * prop.fontSize) + "px " + prop.font;
+                            context.fillStyle = "rgba(255, 0, 0, " + Math.floor(prop.alpha) + ")";
+
+                            if (prop.angle !== 0) {
+                                context.translate(Math.floor(prop.x), Math.floor(prop.y));
+                                context.rotate(prop.angle);
+                            } else {
+                                context.translate(Math.floor(prop.x), Math.floor(prop.y));
+                            }
+
+                            context.fillText(prop.subject, 0, 0);
+
+                            context.restore();
                         }
-                        
-                        context.fillText(prop.subject, 0, 0);
-                        
-                        context.restore();
+                    }
+                    //handle loop
+                    if ((animations[i].animation.timeFromStart > animations[i].animation.stopTime)) {
+                        if (animations[i].loop) {
+                            animations[i].animation.loopTime = new Date().getTime();
+                            runtimeAnimationsArray[i] = that.createRuntimeAnimations([animations[i]])[0];//TODO fix this later
+                        } else {//remove
+                            runtimeAnimationsArray.splice(i, 1);
+                        }
+                        if(runtimeAnimationsArray.length === 0){
+                            return;
+                        }
                     }
                 }
-                if ((timeFromStart > stopTime)) {
-                    if (loop) {
-                        loopTime = new Date().getTime();
-                        runtimeAnimationsArray = that.createRuntimeAnimations(animations);
-                    } else {
-                        return;
-                    }
-                }
+
                 requestId = requestAnimationFrame(runner);
             };
             requestId = requestAnimationFrame(runner);
@@ -566,48 +562,48 @@ var Animator2 = (function() {
             return loop(this, new Array());
         };
 
-        var getPositions = function (letters, settings) {
+        var getPositions = function(letters, settings) {
             var canvas = document.createElement('canvas');
             canvas.width = 0;
             canvas.height = 0;
-            var ctx = canvas.getContext("2d");           
-            ctx.font=Math.floor(settings.scale * settings.fontSize) + "px " + settings.font;
-            
+            var ctx = canvas.getContext("2d");
+            ctx.font = Math.floor(settings.scale * settings.fontSize) + "px " + settings.font;
+
             var result = [0];
             var position = 0;
-            for(var i = 0; i < letters.length; i++){
+            for (var i = 0; i < letters.length; i++) {
                 var width = ctx.measureText(letters[i]).width;
                 position = position + width;
                 result.push(position);
             }
-            
-            return result;
-        };        
 
-        this.split = function (fun) {
+            return result;
+        };
+
+        this.split = function(fun) {
             if (this.isEmpty()) {
                 return this;
             }
-            
+
             var that = this;
             var subject = this.head().getSettings().subject;
-            var letters = fun===undefined?subject.split(''):fun(subject);
+            var letters = fun === undefined ? subject.split('') : fun(subject);
             var positions = getPositions(letters, this.head().getSettings());
-            var loop = function (head, index) {              
+            var loop = function(head, index) {
                 var settings = head.getSettings();
                 settings.subject = letters[index];
-                settings.x = settings.x + positions[index];                
-                if (letters.length-1 === index) {
-                    return new Cons(new TextAnimation(settings), lazy(function () {
+                settings.x = settings.x + positions[index];
+                if (letters.length - 1 === index) {
+                    return new Cons(new TextAnimation(settings), lazy(function() {
                         return that.tail().split(fun);
                     }));
                 }
-                return new Cons(new TextAnimation(settings), lazy(function () {
+                return new Cons(new TextAnimation(settings), lazy(function() {
                     return loop(head, index + 1);
                 }));
             };
             return loop(this.head(), 0);
-        };  
+        };
 
         this.cons = function(head) {
             return new Cons(new TextAnimation({subject: head}), this);
@@ -703,9 +699,9 @@ var Animator2 = (function() {
     }
 
     return {
-            textStream:Stream,
-            animator: Animator
-        };
+        textStream: Stream,
+        animator: Animator
+    };
 
 })();
 
