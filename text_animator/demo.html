@@ -111,46 +111,238 @@
                 };
 
 
-                var randomNumber = function(low, high){
-                    var result = Math.floor((Math.random() * (high-low)) + low);
+                var randomNumber = function(low, high) {
+                    var result = Math.floor((Math.random() * (high - low)) + low);
                     return result;
                 };
 
 
                 var canvas1 = document.getElementById("canvas1");
 
-                 var rocket = new Animator2.textStream("R","EQ", "UIREJS").
-                         map(function(animation, index){
-                            return animation
-                                    .font("Arial")
-                                    .fontSize(20)
-                                    .x(400-Math.pow(index,2)*7)
-                                    .y(500+index*15)
-                                    .static({startTime: 0, duration: 1000})
-                                    .scrollY({startTime: 1000, duration: 4500, change: -300, effectName: "sin", period: 14000})
-                                    .rotate({startTime: 5000, duration:1000, change: 90*Math.PI/180})
-                                    .scrollX({startTime: 5000, duration:1000, change: index==0?10:0})
-                                    .scrollY({startTime: 5000, duration:1000, change: -20*Math.pow(index,1.5)})
-                                    .scrollY({startTime: 6000, duration: 49000, change: -50, effectName: "sin", period: 7000})
-                         });
-                         
-                 var background1 = new Animator2
-                         .textStream()
-                         .generate("REQUIRE JS.REQUIRE JS.                                                                         REQUIRE JS.REQUIRE JS.", function(seed){
-                            return seed;
-                         })
-                         .take(120)
-                         .map(function(animation,index){
-                            return animation
-                                    .font("Arial")
-                                    .fontSize(20)
-                                    .x(1000)
-                                    .y(randomNumber(-200,-100))
-                                    .scrollX({startTime: 6000 + index*50, duration:2000, change:-1000})
-                                    .rotate({startTime: 5999, duration:1, change: 90*Math.PI/180})
-                         }); 
-                         
-                        
+                var rocket = new Animator2.textStream("R", "EQ", "UIREJS").
+                        map(function(animation, index) {
+                    return animation
+                            .font("Arial")
+                            .fontSize(20)
+                            .x(400 - Math.pow(index, 2) * 7)
+                            .y(500 + index * 15)
+                            .rgba({"red": 255, "green": 0, "blue": 0})
+                            .static({startTime: 0, duration: 1000})
+                            //lift off
+                            .scrollY({startTime: 1000, duration: 4500, change: -300, effectName: "sin", period: 14000})
+                            .rotate({startTime: 5000, duration: 1000, change: 90 * Math.PI / 180})
+                            .scrollX({startTime: 5000, duration: 1000, change: index === 0 ? 10 : 0})
+                            .scrollY({startTime: 5000, duration: 1000, change: -20 * Math.pow(index, 1.5)})
+
+                            //flight
+                            .scrollY({startTime: 6000, duration: 6000, change: -100, effectName: "sin", period: 12000})
+
+                            //land
+                            .rotate({startTime: 12000, duration: 1000, change: -90 * Math.PI / 180})
+                            .scrollX({startTime: 12000, duration: 1000, change: index === 0 ? -10 : 0})
+                            .scrollY({startTime: 12000, duration: 1000, change: 20 * Math.pow(index, 1.5)})
+                            .scrollY({startTime: 13000, duration: 4500, change: 300, effectName: "sin", period: 18000})
+                });
+
+                var background1 = new Animator2
+                        .textStream()
+                        .generate("ROLLING HILLS. ROLLING HILLS.", function(seed) {
+                    return seed;
+                })
+                        .take(120)
+                        .map(function(animation, index) {
+                    return animation
+                            .font("Arial")
+                            .fontSize(20)
+                            .rgba({"red": 0, "green": 0, "blue": 0})
+                            .x(800)
+                            .y(randomNumber(400, 530))
+                            .scrollX({startTime: 6000 + index * 50, duration: 2000, change: -1000})
+                            .rotate({startTime: 5999, duration: 1, change: 90 * Math.PI / 180})
+                });
+
+
+                var background2 = new Animator2
+                        .textStream()
+                        .generate("FLAT LAND. FLAT LAND.", function(seed) {
+                    return seed;
+                })
+                        .take(53)
+                        .map(function(animation, index) {
+                    return animation
+                            .font("Arial")
+                            .rgba({"red": 0, "green": 0, "blue": 0})
+                            .fontSize(20)
+                            .x(15 * index)
+                            .y(530)
+                            .rotate({startTime: 0, duration: 1, change: 90 * Math.PI / 180})
+                            .static({startTime: 0, duration: 6000})
+                            .scrollX({startTime: 6000, duration: 2000, change: -1000})
+                            .static({startTime: 6000, duration: 12000});
+                });
+
+                var sun = new Animator2
+                        .textStream("S","SUN", "SUNSU", "SUN", "S")
+                        .map(function(animation, index) {
+                    var x = 600;
+                    if (index === 1 || index ===3) {
+                        x = x - 15;
+                    }
+                    if (index === 2) {
+                        x = x - 30;
+                    }
+                    return animation
+                            .font("Arial")
+                            .rgba({"red": 240, "green": 204, "blue": 0})
+                            .fontSize(20)
+                            .x(x)
+                            .y(50 + index * 15)
+                            .static({startTime: 0, duration: 4000});
+                });
+                
+                
+                
+
+                /*
+          ___I_
+         /\-_--\
+        /  \_-__\
+        |[]| [] |
+                 */
+                
+                var smallHouse = function(xPosition, yPosition){
+                    return new Animator2
+                        .textStream("   ___I_", "  /\\-_----\\"," /  \\____\\", "| [] |   []   |")
+                        .map(function(animation, index) {
+                    var x = xPosition;
+                    /*
+                    if (index === 0) {
+                        x = x + 10;
+                    }
+                    if (index === 1) {
+                        x = x + 6;
+                    }
+                    if (index === 3) {
+                        x = x -3;
+                    }
+        */
+                    return animation
+                            .font("Arial")
+                            .rgba({"red": 0, "green": 0, "blue": 0})
+                            .fontSize(20)
+                            .x(x)
+                            .y(yPosition + index * 17)
+                            .static({startTime: 0, duration: 20000});
+                    });
+                };
+                
+                /*
+                          ~~
+                        ~
+                      _u__
+                     /____\
+                     |[][]|
+                     |[]..|
+                     '--'''
+                 */
+                
+                var smallHouse2 = function(xPosition, yPosition){
+                    return new Animator2
+                        .textStream("       ~~", "     ~"," _u__", "/____\\", "|  []  []  |", "|  []  ..  |", "'-----' '  '")
+                        .map(function(animation, index) {
+                    var x = xPosition;
+
+                    return animation
+                            .font("Arial")
+                            .rgba({"red": 0, "green": 0, "blue": 0})
+                            .fontSize(20)
+                            .x(x)
+                            .y(yPosition + index * 20)
+                            .static({startTime: 0, duration: 20000});
+                    });
+                };
+                /*
+                         ###
+                        #o###
+                      #####o###
+                     #o#\#|#/###
+                      ###\|/#o#
+                       # }|{  #
+                         }|{
+                 */
+                
+                 var tree = function(xPosition, yPosition){
+                    return new Animator2
+                        .textStream("       ###", "     #o###", "  #####o###", "#o#\\# | #/###", "  ###\\ | /#o#", "      # }|{   #", "         }|{")
+                        .map(function(animation, index) {
+                    var x = xPosition;
+                    
+                    return animation
+                            .font("Arial")
+                            .rgba({"red": 0, "green": 0, "blue": 0})
+                            .fontSize(10)
+                            .x(x)
+                            .y(yPosition + index * 10)
+                            .static({startTime: 0, duration: 20000});
+                    })
+                    .split()
+                    .map(function(animation){
+                        if(animation.getSettings().subject === "#"){
+                            return animation.rgba({"red": 0, "green": 255, "blue": 0});
+                        }else if(animation.getSettings().subject === "o"){
+                            return animation.rgba({"red": 240, "green": 0, "blue": 0});
+                        }
+                        return animation;
+                    });
+                };               
+                
+                
+                
+                
+                /*
+                      %%%,%%%%%%%
+                   ,'%%  \\-*%%%%%%%
+             ;%%%%%*%   _%%%%"
+              ,%%%       \(_.*%%%%.
+              % *%%, ,%%%%*(    '
+            %^     ,*%%% )\|,%%*%,_
+                 *%    \/ #).-"*%%*
+                     _.) ,/ *%,
+                      /)#(
+                 */
+                
+                 var tree2 = function(xPosition, yPosition){
+                    return new Animator2
+                        .textStream("                        %%%,%%%%%%%", 
+                                    "                   , '%%   \\  \\ - *%%%%%%%", 
+                                    "  ;%%%%%*%   _%%%%\"", 
+                                    "    ,%%%              \\(_.*%%%%.",
+                                    "    % *%%, ,%%%%*(        '", 
+                                    "%^           ,*%%%   ) \\ |,%%*%,_", 
+                                    "            *%            \\/  #).-\"*%%*", 
+                                    "                          _.)  , / *%,",
+                                    "                            /)# (")
+                        .map(function(animation, index) {
+                    var x = xPosition;
+                    
+                    return animation
+                            .font("Arial")
+                            .rgba({"red": 0, "green": 0, "blue": 0})
+                            .fontSize(10)
+                            .x(x)
+                            .y(yPosition + index * 10)
+                            .static({startTime: 0, duration: 20000});
+                    })
+                    .split()
+                    .map(function(animation){
+                        if(animation.getSettings().subject === "%"){
+                            return animation.rgba({"red": 0, "green": 255, "blue": 0});
+                        }
+                        return animation;
+                    });
+                };   
+                
+
 
 
                 var canvas2 = document.getElementById("canvas2");
@@ -167,6 +359,7 @@
                     return animation
                             .font("Arial")
                             .fontSize(25)
+                            .rgba({"red": 255, "green": 0, "blue": 0})
                             .x(300)
                             .y(50)
                             //tube
@@ -221,9 +414,24 @@
                     rocketAnimator.stop();
 
                     if (getActiveSlide() === "animated_1") {
-                       rocketAnimator.start([{animation:rocket, loop:true}, {animation:background1, loop: true}]);
+                        //, , {animation: background2, loop: false},
+                        rocketAnimator
+                                .start([ 
+                                    {animation: rocket, loop: true}, 
+                                    {animation: sun, loop: true}, 
+                                    
+                                    {animation: smallHouse(250, 450), loop: true},
+                                    {animation: smallHouse(150, 500), loop: true},
+                                    {animation: smallHouse2(100, 400), loop: true},
+                                    {animation: smallHouse(600, 450), loop: true},
+                                    {animation: smallHouse2(670, 360), loop: true},
+                                    {animation: tree(50, 400), loop: true},
+                                    {animation: tree(30, 420), loop: true},
+                                    {animation: tree(310, 420), loop: true},
+                                    {animation: tree2(100, 100), loop: true}
+                                ]);
                     } else if (getActiveSlide() === "animated_2") {
-                        slide2Animator.start([{animation:slide2}], new Date().getTime() - timeFromStartSlide2);
+                        slide2Animator.start([{animation: slide2}], new Date().getTime() - timeFromStartSlide2);
                     }
                 };
 
@@ -234,7 +442,7 @@
                 animate();
 
                 $(window).keypress(function(e) {
-                    
+
                 });
 
 

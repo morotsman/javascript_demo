@@ -152,6 +152,7 @@ var Animator2 = (function() {
         var stopTime = getOrDefault(_config.stopTime, 0);
         var scale = getOrDefault(_config.scale, 1);
         var angle = getOrDefault(_config.angle, 0);
+        var rgba = getOrDefault(_config.rgba, {red:0, green:0, blue:0});
 
         var copyConfig = function() {
             return {
@@ -166,13 +167,20 @@ var Animator2 = (function() {
                 stopTime: stopTime,
                 scale: scale,
                 duration: duration,
-                angle: angle
+                angle: angle,
+                rgba: rgba
             };
         };
 
         //remove
         this.getSettings = function() {
             return copyConfig();
+        };
+
+        this.rgba = function(rgba) {
+            var copyOfConfig = copyConfig();
+            copyOfConfig.rgba = rgba;
+            return new TextAnimation(copyOfConfig);
         };
 
         this.angle = function(angle) {
@@ -320,7 +328,7 @@ var Animator2 = (function() {
         };
     }
 
-    function Animator(context, canvas, loop) {
+    function Animator(context, canvas) {
         var requestAnimationFrame = window.requestAnimationFram ||
                 window.mozRequestAnimationFrame ||
                 window.webkitRequestAnimationFrame ||
@@ -400,7 +408,7 @@ var Animator2 = (function() {
                             var prop = that.apply(animations[i].animation.timeFromStart, animation);
                             context.save();
                             context.font = Math.floor(prop.scale * prop.fontSize) + "px " + prop.font;
-                            context.fillStyle = "rgba(255, 0, 0, " + Math.floor(prop.alpha) + ")";
+                            context.fillStyle = "rgba(" + prop.rgba.red + "," +prop.rgba.green + "," +prop.rgba.blue +", " + Math.floor(prop.alpha) + ")";
 
                             if (prop.angle !== 0) {
                                 context.translate(Math.floor(prop.x), Math.floor(prop.y));
@@ -416,12 +424,16 @@ var Animator2 = (function() {
                     }
                     //handle loop
                     if ((animations[i].animation.timeFromStart > animations[i].animation.stopTime)) {
+                        console.log("i: " + i + " loop: " + animations[i].loop);
                         if (animations[i].loop) {
                             animations[i].animation.loopTime = new Date().getTime();
                             runtimeAnimationsArray[i] = that.createRuntimeAnimations([animations[i]])[0];//TODO fix this later
                         } else {//remove
                             runtimeAnimationsArray.splice(i, 1);
+                            animations.splice(i, 1)
+                            console.log("Removing: " + i);
                         }
+                        
                         if(runtimeAnimationsArray.length === 0){
                             return;
                         }
@@ -609,9 +621,6 @@ var Animator2 = (function() {
             return new Cons(new TextAnimation({subject: head}), this);
         };
 
-        this.animate = function(canvas, loop) {
-            return new Animator(this, canvas.getContext("2d"), canvas, loop);
-        };
     }
     ;
 
