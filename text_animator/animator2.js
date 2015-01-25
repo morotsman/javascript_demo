@@ -391,6 +391,7 @@ var Animator2 = (function() {
                 var stopTime = animations[i].animation.foldLeft(0, function(acc, animation) {
                     return Math.max(acc, animation.getStopTime());
                 });
+                console.log(stopTime);
                 animations[i].animation.stopTime = stopTime;
             }
             var that = this;

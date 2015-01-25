@@ -129,19 +129,19 @@
                             .rgba({"red": 255, "green": 0, "blue": 0})
                             .static({startTime: 0, duration: 1000})
                             //lift off
-                            .scrollY({startTime: 1000, duration: 4500, change: -300, effectName: "sin", period: 14000})
+                            .scrollY({startTime: 1000, duration: 4500, change: -350, effectName: "sin", period: 14000})
                             .rotate({startTime: 5000, duration: 1000, change: 90 * Math.PI / 180})
                             .scrollX({startTime: 5000, duration: 1000, change: index === 0 ? 10 : 0})
                             .scrollY({startTime: 5000, duration: 1000, change: -20 * Math.pow(index, 1.5)})
 
                             //flight
-                            .scrollY({startTime: 6000, duration: 6000, change: -100, effectName: "sin", period: 12000})
+                            .scrollY({startTime: 6000, duration: 20000, change: -70, effectName: "sin", period: 12000})
 
                             //land
-                            .rotate({startTime: 12000, duration: 1000, change: -90 * Math.PI / 180})
-                            .scrollX({startTime: 12000, duration: 1000, change: index === 0 ? -10 : 0})
-                            .scrollY({startTime: 12000, duration: 1000, change: 20 * Math.pow(index, 1.5)})
-                            .scrollY({startTime: 13000, duration: 4500, change: 300, effectName: "sin", period: 18000})
+                            .rotate({startTime: 26000, duration: 1000, change: -90 * Math.PI / 180})
+                            .scrollX({startTime: 26000, duration: 1000, change: index === 0 ? -10 : 0})
+                            .scrollY({startTime: 26000, duration: 1000, change: 20 * Math.pow(index, 1.5)})
+                            .scrollY({startTime: 27000, duration: 4500, change: 300, effectName: "sin", period: 18000})
                 });
 
                 var background1 = new Animator2
@@ -215,24 +215,13 @@
                         .textStream("   ___I_", "  /\\-_----\\"," /  \\____\\", "| [] |   []   |")
                         .map(function(animation, index) {
                     var x = xPosition;
-                    /*
-                    if (index === 0) {
-                        x = x + 10;
-                    }
-                    if (index === 1) {
-                        x = x + 6;
-                    }
-                    if (index === 3) {
-                        x = x -3;
-                    }
-        */
+
                     return animation
                             .font("Arial")
                             .rgba({"red": 0, "green": 0, "blue": 0})
                             .fontSize(20)
                             .x(x)
-                            .y(yPosition + index * 17)
-                            .static({startTime: 0, duration: 20000});
+                            .y(yPosition + index * 17);
                     });
                 };
                 
@@ -257,8 +246,7 @@
                             .rgba({"red": 0, "green": 0, "blue": 0})
                             .fontSize(20)
                             .x(x)
-                            .y(yPosition + index * 20)
-                            .static({startTime: 0, duration: 20000});
+                            .y(yPosition + index * 20);
                     });
                 };
                 /*
@@ -271,7 +259,7 @@
                          }|{
                  */
                 
-                 var tree = function(xPosition, yPosition){
+                 var tree = function(xPosition, yPosition, size){
                     return new Animator2
                         .textStream("       ###", "     #o###", "  #####o###", "#o#\\# | #/###", "  ###\\ | /#o#", "      # }|{   #", "         }|{")
                         .map(function(animation, index) {
@@ -280,10 +268,9 @@
                     return animation
                             .font("Arial")
                             .rgba({"red": 0, "green": 0, "blue": 0})
-                            .fontSize(10)
+                            .fontSize(size)
                             .x(x)
-                            .y(yPosition + index * 10)
-                            .static({startTime: 0, duration: 20000});
+                            .y(yPosition + index * size);
                     })
                     .split()
                     .map(function(animation){
@@ -330,8 +317,7 @@
                             .rgba({"red": 0, "green": 0, "blue": 0})
                             .fontSize(10)
                             .x(x)
-                            .y(yPosition + index * 10)
-                            .static({startTime: 0, duration: 20000});
+                            .y(yPosition + index * 10);
                     })
                     .split()
                     .map(function(animation){
@@ -420,20 +406,50 @@
                                     {animation: rocket, loop: true}, 
                                     {animation: sun, loop: true}, 
                                     
-                                    {animation: smallHouse(250, 450), loop: true},
-                                    {animation: smallHouse(150, 500), loop: true},
-                                    {animation: smallHouse2(100, 400), loop: true},
-                                    {animation: smallHouse(600, 450), loop: true},
-                                    {animation: smallHouse2(670, 360), loop: true},
-                                    {animation: tree(50, 400), loop: true},
-                                    {animation: tree(30, 420), loop: true},
-                                    {animation: tree(310, 420), loop: true},
-                                    {animation: tree2(100, 100), loop: true}
+                                    {animation: layoutAnimation(smallHouse(1000, 450),6500, 4000), loop: true},
+                                    {animation: layoutAnimation(smallHouse(1000, 500),8000, 4000), loop: true},
+                                    {animation: layoutAnimation(smallHouse2(1000, 360),8500, 4000), loop: true},
+                                    {animation: layoutAnimation(smallHouse2(1000, 360),10000, 4000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 400, 10), 10500, 4000), loop: true},
+                                    {animation: layoutAnimation(tree2(1000, 400), 7000, 4000), loop: true},
+                                    
+                                    {animation: layoutAnimation(tree(1000, 300, 5), 6000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 300, 5), 6200, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 6500, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 8000, 10000), loop: true},
+                                     {animation: layoutAnimation(tree(1000, 300, 5), 9000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 300, 5), 9100, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 10000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 11500, 10000), loop: true},                                   
+                                     {animation: layoutAnimation(tree(1000, 300, 5), 13000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 300, 5), 14000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 15000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 15500, 10000), loop: true},
+                                     {animation: layoutAnimation(tree(1000, 300, 5), 16000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 300, 5), 17000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 17200, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 18000, 10000), loop: true},   
+                                  
+                                     {animation: layoutAnimation(tree(1000, 300, 5), 19000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 21000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 380, 5), 21300, 10000), loop: true},
+                                     {animation: layoutAnimation(tree(1000, 300, 5), 23000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 300, 5), 24000, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 24100, 10000), loop: true},
+                                    {animation: layoutAnimation(tree(1000, 350, 5), 25000, 10000), loop: true},               
+                                    
                                 ]);
                     } else if (getActiveSlide() === "animated_2") {
                         slide2Animator.start([{animation: slide2}], new Date().getTime() - timeFromStartSlide2);
                     }
                 };
+                
+                var layoutAnimation = function(animation, startTime, duration){
+                    return animation.map(function(animation){
+                                                    return animation                                 
+                                                            .scrollX({startTime: startTime, duration: duration, change: -1000});
+                                                });
+                }
 
                 document.getElementById("impress").addEventListener("impress:stepenter", function(event, more) {
                     animate();
