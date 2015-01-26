@@ -181,24 +181,27 @@
                             .static({startTime: 6000, duration: 12000});
                 });
 
-                var sun = new Animator2
-                        .textStream("S","SUN", "SUNSU", "SUN", "S")
-                        .map(function(animation, index) {
-                    var x = 600;
-                    if (index === 1 || index ===3) {
-                        x = x - 15;
-                    }
-                    if (index === 2) {
-                        x = x - 30;
-                    }
-                    return animation
-                            .font("Arial")
-                            .rgba({"red": 240, "green": 204, "blue": 0})
-                            .fontSize(20)
-                            .x(x)
-                            .y(50 + index * 15)
-                            .static({startTime: 0, duration: 4000});
-                });
+                var sun = function(xPos, yPos){
+                    return new Animator2
+                               .textStream("S","SUN", "SUNSU", "SUN", "S")
+                               .map(function(animation, index) {
+                           var x = xPos;
+                           if (index === 1 || index ===3) {
+                               x = x - 15;
+                           }
+                           if (index === 2) {
+                               x = x - 30;
+                           }
+                           return animation
+                                   .font("Arial")
+                                   .rgba({"red": 240, "green": 204, "blue": 0})
+                                   .fontSize(20)
+                                   .x(x)
+                                   .y(yPos + index * 15);
+                       });                   
+                }
+                        
+
                 
                 
                 
@@ -210,7 +213,7 @@
         |[]| [] |
                  */
                 
-                var smallHouse = function(xPosition, yPosition){
+                var smallHouse = function(xPosition, yPosition, size){
                     return new Animator2
                         .textStream("   ___I_", "  /\\-_----\\"," /  \\____\\", "| [] |   []   |")
                         .map(function(animation, index) {
@@ -219,9 +222,9 @@
                     return animation
                             .font("Arial")
                             .rgba({"red": 0, "green": 0, "blue": 0})
-                            .fontSize(20)
+                            .fontSize(size)
                             .x(x)
-                            .y(yPosition + index * 17);
+                            .y(yPosition + index * size);
                     });
                 };
                 
@@ -235,7 +238,7 @@
                      '--'''
                  */
                 
-                var smallHouse2 = function(xPosition, yPosition){
+                var smallHouse2 = function(xPosition, yPosition,size){
                     return new Animator2
                         .textStream("       ~~", "     ~"," _u__", "/____\\", "|  []  []  |", "|  []  ..  |", "'-----' '  '")
                         .map(function(animation, index) {
@@ -244,9 +247,9 @@
                     return animation
                             .font("Arial")
                             .rgba({"red": 0, "green": 0, "blue": 0})
-                            .fontSize(20)
+                            .fontSize(size)
                             .x(x)
-                            .y(yPosition + index * 20);
+                            .y(yPosition + index * size);
                     });
                 };
                 /*
@@ -298,7 +301,7 @@
                       /)#(
                  */
                 
-                 var tree2 = function(xPosition, yPosition){
+                 var tree2 = function(xPosition, yPosition, size){
                     return new Animator2
                         .textStream("                        %%%,%%%%%%%", 
                                     "                   , '%%   \\  \\ - *%%%%%%%", 
@@ -315,9 +318,9 @@
                     return animation
                             .font("Arial")
                             .rgba({"red": 0, "green": 0, "blue": 0})
-                            .fontSize(10)
+                            .fontSize(size)
                             .x(x)
-                            .y(yPosition + index * 10);
+                            .y(yPosition + index * size);
                     })
                     .split()
                     .map(function(animation){
@@ -326,14 +329,64 @@
                         }
                         return animation;
                     });
-                };   
+                };  
+                
+        /*
+
+                    /   \              /'\       _                              
+\_..           /'.,/     \_         .,'   \     / \_                            
+    \         /            \      _/       \_  /    \     _                     
+     \__,.   /              \    /           \/.,   _|  _/ \                    
+          \_/                \  /',.,''\      \_ \_/  \/    \                   
+                           _  \/   /    ',../',.\    _/      \                  
+             /           _/m\  \  /    |         \  /.,/'\   _\                 
+           _/           /MMmm\  \_     |          \/      \_/  \                
+          /      \     |MMMMmm|   \__   \          \_       \   \_              
+                  \   /MMMMMMm|      \   \           \       \    \             
+                   \  |MMMMMMmm\      \___            \_      \_   \            
+                    \|MMMMMMMMmm|____.'  /\_            \       \   \_          
+                    /'.,___________...,,'   \            \   \        \         
+                   /       \          |      \    |__     \   \_       \        
+                 _/        |           \      \_     \     \    \       \_      
+                /                               \     \     \_   \        \     
+                                                 \     \      \   \__      \    
+                                                  \     \_     \     \      \   
+                                                   |      \     \     \      \  
+                                                    \            |            \ 
+
+     */            
+                
+                 var mountain = function(xPosition, yPosition){
+                    return new Animator2
+                        .textStream("          /   \\              /'\\       _                              ", 
+                                    "     /'.,/     \\_         .,'   \\     / \\_                            ", 
+                                    "    /            \\      _/       \\_  /    \\     _                     ",
+                                    "   /              \\    /           \\/.,   _|  _/ \\                    ",
+                                    "__/                \\  /',.,''\\      \\_ \\_/  \\/    \\                   ",
+                                    "                _  \\/   /    ',../',.\\    _/      \\                  ",
+                                    "  /           _/ \\  \  /    |         \\  /.,/'\\   _\\                 ",
+                                    "_/           /    \\  \\_     |          \\/      \\_/  \\                ")
+  
+
+                        .map(function(animation, index) {
+                    var x = xPosition;
+                    
+                    return animation
+                            .font("Arial")
+                            .rgba({"red": 0, "green": 0, "blue": 0})
+                            .fontSize(20)
+                            .x(x)
+                            .y(yPosition + index * 20)
+                            ;
+                    });
+                };                  
                 
 
 
 
                 var canvas2 = document.getElementById("canvas2");
                 var demoZeitArray = ["R", "E", "Q", "U", "I", "R", "E", " ", "J", "S "];
-                var slide2 = new Animator2.textStream()
+                var vortex = new Animator2.textStream()
                         .generate(0, function(seed) {
                     return seed + 1;
                 })
@@ -403,53 +456,93 @@
                         //, , {animation: background2, loop: false},
                         rocketAnimator
                                 .start([ 
-                                    {animation: rocket, loop: true}, 
-                                    {animation: sun, loop: true}, 
+                                    //{animation: rocket, loop: true}, 
+                                    {animation: sun(600,1040).scrollY({startTime: 0, duration: 6000, change: -1000}).static({startTime: 6000, duration: 50000}), loop: false}, 
+                                    {animation: smallHouse(300, 1500, 17)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
+                                        loop: false},  
+                                    {animation: smallHouse(200, 1470, 17)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
+                                        loop: false},
+                                    {animation: smallHouse2(600, 1480, 20)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
+                                        loop: false}, 
+                                    {animation: tree(260, 1450,10)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
+                                        loop: false},                                     
+                                    {animation: tree2(450, 1450, 10)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
+                                        loop: false}, 
+                                     {animation: tree(760, 1450,12)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
+                                        loop: false}, 
+                                    {animation: tree(800, 1470,10)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
+                                        loop: false},                                     
                                     
-                                    {animation: layoutAnimation(smallHouse(1000, 450),6500, 4000), loop: true},
-                                    {animation: layoutAnimation(smallHouse(1000, 500),8000, 4000), loop: true},
-                                    {animation: layoutAnimation(smallHouse2(1000, 360),8500, 4000), loop: true},
-                                    {animation: layoutAnimation(smallHouse2(1000, 360),10000, 4000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 400, 10), 10500, 4000), loop: true},
-                                    {animation: layoutAnimation(tree2(1000, 400), 7000, 4000), loop: true},
+                                    {animation: smallHouse(1000, 470, 17)
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
+                                        loop: false},
+                                    {animation: smallHouse2(1100, 480, 20)
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
+                                        loop: false},                                     
                                     
-                                    {animation: layoutAnimation(tree(1000, 300, 5), 6000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 300, 5), 6200, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 6500, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 8000, 10000), loop: true},
-                                     {animation: layoutAnimation(tree(1000, 300, 5), 9000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 300, 5), 9100, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 10000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 11500, 10000), loop: true},                                   
-                                     {animation: layoutAnimation(tree(1000, 300, 5), 13000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 300, 5), 14000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 15000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 15500, 10000), loop: true},
-                                     {animation: layoutAnimation(tree(1000, 300, 5), 16000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 300, 5), 17000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 17200, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 18000, 10000), loop: true},   
-                                  
-                                     {animation: layoutAnimation(tree(1000, 300, 5), 19000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 21000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 380, 5), 21300, 10000), loop: true},
-                                     {animation: layoutAnimation(tree(1000, 300, 5), 23000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 300, 5), 24000, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 24100, 10000), loop: true},
-                                    {animation: layoutAnimation(tree(1000, 350, 5), 25000, 10000), loop: true},               
+                                    
+                                    {animation: tree(260, 1400,5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 60000, change: -1000}), 
+                                        loop: false},  
+                                    {animation: tree2(280, 1410,5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 60000, change: -1000}), 
+                                        loop: false}, 
+                                    
+                                    
+                                    {animation: tree(400, 1300,5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 90000, change: -1000}), 
+                                        loop: false}, 
+                                    {animation: tree(300, 1320,5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 90000, change: -1000}), 
+                                        loop: false},                                      
+                                    {animation: tree2(600, 1310,7)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 90000, change: -1000}), 
+                                        loop: false}, 
+                                    
+                                    
+                                    {animation: mountain(0, 1150, 5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 120000, change: -1000}),
+                                        loop: false},
+                                    {animation: mountain(250, 1140, 5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 120000, change: -1000}),
+                                        loop: false},
+                                    {animation: mountain(500, 1120, 5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 120000, change: -1000}),
+                                        loop: false},
+                                    {animation: mountain(750, 1150, 5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 120000, change: -1000}),
+                                        loop: false},                                    
+                              
                                     
                                 ]);
                     } else if (getActiveSlide() === "animated_2") {
-                        slide2Animator.start([{animation: slide2}], new Date().getTime() - timeFromStartSlide2);
+                        slide2Animator.start([{animation: vortex}], new Date().getTime() - timeFromStartSlide2);
                     }
                 };
-                
-                var layoutAnimation = function(animation, startTime, duration){
-                    return animation.map(function(animation){
-                                                    return animation                                 
-                                                            .scrollX({startTime: startTime, duration: duration, change: -1000});
-                                                });
-                }
+
 
                 document.getElementById("impress").addEventListener("impress:stepenter", function(event, more) {
                     animate();

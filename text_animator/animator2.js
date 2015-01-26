@@ -152,7 +152,7 @@ var Animator2 = (function() {
         var stopTime = getOrDefault(_config.stopTime, 0);
         var scale = getOrDefault(_config.scale, 1);
         var angle = getOrDefault(_config.angle, 0);
-        var rgba = getOrDefault(_config.rgba, {red:0, green:0, blue:0});
+        var rgba = getOrDefault(_config.rgba, {red: 0, green: 0, blue: 0});
 
         var copyConfig = function() {
             return {
@@ -402,14 +402,14 @@ var Animator2 = (function() {
                 for (var i = 0; i < runtimeAnimationsArray.length; i++) {
                     animations[i].animation.startTime = animations[i].animation.startTime === undefined ? new Date().getTime() : animations[i].animation.startTime;
                     animations[i].animation.startTime = animations[i].animation.loopTime === undefined ? animations[i].animation.startTime : animations[i].animation.loopTime;
-                    animations[i].animation.timeFromStart = now - animations[i].animation.startTime;                   
+                    animations[i].animation.timeFromStart = now - animations[i].animation.startTime;
                     for (var j = 0; j < runtimeAnimationsArray[i].length; j++) {
                         var animation = runtimeAnimationsArray[i][j];
                         if ((animations[i].animation.timeFromStart < animation.getStopTime()) && animations[i].animation.timeFromStart > animation.getStartTime()) {
                             var prop = that.apply(animations[i].animation.timeFromStart, animation);
                             context.save();
                             context.font = Math.floor(prop.scale * prop.fontSize) + "px " + prop.font;
-                            context.fillStyle = "rgba(" + prop.rgba.red + "," +prop.rgba.green + "," +prop.rgba.blue +", " + Math.floor(prop.alpha) + ")";
+                            context.fillStyle = "rgba(" + prop.rgba.red + "," + prop.rgba.green + "," + prop.rgba.blue + ", " + Math.floor(prop.alpha) + ")";
 
                             if (prop.angle !== 0) {
                                 context.translate(Math.floor(prop.x), Math.floor(prop.y));
@@ -434,8 +434,8 @@ var Animator2 = (function() {
                             animations.splice(i, 1)
                             console.log("Removing: " + i);
                         }
-                        
-                        if(runtimeAnimationsArray.length === 0){
+
+                        if (runtimeAnimationsArray.length === 0) {
                             return;
                         }
                     }
@@ -654,6 +654,25 @@ var Animator2 = (function() {
         this.forEach = function(fun) {
             return this._forEach(fun, 0);
         };
+
+        this.scrollY = function(settings) {
+            return this.map(function(animation) {
+                return animation
+                        .scrollY(settings);
+            });
+        };
+
+        this.static = function(settings) {
+            return this.map(function(animation) {
+                return animation.static(settings);
+            });
+        };
+
+        this.scrollX = function(settings) {
+            return this.map(function(animation) {
+                return animation.scrollX(settings);
+            });
+        };
     }
     ;
     //inherit from StreamImpl
@@ -686,6 +705,18 @@ var Animator2 = (function() {
         this.forEach = function(fun) {
             return this._forEach(fun, 0);
         };
+        
+        this.scrollY = function(startTime, duration, change) {
+            return this;
+        };
+
+        this.static = function(startTime, duration) {
+            return this;
+        };
+
+        this.scrollX = function(startTime, duration) {
+            return this;
+        };        
     }
     ;
 
