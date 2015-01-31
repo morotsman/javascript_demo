@@ -63,46 +63,13 @@
 
         <script src="external/impress.js"></script>
         <script src="external/jquery.min.js"></script>
-        <script type="text/javascript" src="stream.js"></script>
-        <script type="text/javascript" src="list.js"></script>
-        <script type="text/javascript" src="timer.js"></script>
-        <script type="text/javascript" src="animator.js"></script>
-        <script type="text/javascript" src="animator2.js"></script>
+        <script type="text/javascript" src="text_animator/list.js"></script>
+        <script type="text/javascript" src="text_animator/animator2.js"></script>
         <script>impress().init();
 
             $(window).load(function() {
 
 
-
-                var positiveNumbers = new Stream().generate(0, function(seed) {
-                    return seed + 1;
-                });
-
-
-                var primes = new Stream()
-                        .generateFromStream(positiveNumbers.tail().tail(), function(stream) {
-                    return stream.tail().filter(function(x) {
-                        return x % stream.head() !== 0;
-                    });
-                });
-
-                var letterStreamCreator = function(letters) {
-                    return new Stream()
-                            .generate(0, function(seed) {
-                        return seed + 1 === letters.length ? 0 : seed + 1;
-                    })
-                            .map(function(i) {
-                        return letters[i];
-                    });
-                };
-
-
-
-                var randomStream = function(low, high) {
-                    return new Stream().generate(0, function(seed) {
-                        return Math.floor((Math.random() * high) + low);
-                    });
-                };
 
 
                 var getActiveSlide = function() {
