@@ -103,23 +103,8 @@ define(["util", "list", "effects"], function(util, List, effetcImpls) {
             };
         };
 
-        var availableEffects = {
-            fall: effetcImpls.fallImpl,
-            sin: effetcImpls.sinImpl,
-            cos: effetcImpls.cosImpl,
-            static: effetcImpls.staticImpl,
-            linear: effetcImpls.linearImpl
-        };
-
-
-        var effectSelector = function(effect) {
-            return util.getOrDefault(availableEffects[effect], effetcImpls.linearImpl);
-        };
-
-
-
         var effect = function(property, settings, fun) {
-            var selectedEffect = effectSelector(settings.effectName);
+            var selectedEffect = effetcImpls.getEffect(settings.effectName);
             var startTime = settings.startTime;
             var duration = settings.duration;
             var copyOfConfig = copyConfig();

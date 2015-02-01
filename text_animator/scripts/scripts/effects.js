@@ -1,7 +1,7 @@
-define(function() {
-    
-      var Effects = function (){
-        this.linearImpl = function(property, settings) {
+define(["util"], function(util) {
+
+    var Effects = function() {
+        var linearImpl = function(property, settings) {
             return function() {
                 return function(properties, timeFromStart) {
                     if (settings.startTime > timeFromStart) {
@@ -18,7 +18,7 @@ define(function() {
 
         };
 
-        this.staticImpl = function(property, settings) {
+        var staticImpl = function(property, settings) {
             return function() {
                 return function(properties, timeFromStart) {
                     if (settings.startTime > timeFromStart) {
@@ -49,11 +49,11 @@ define(function() {
             };
         };
 
-        this.sinImpl = function(property, settings) {
+        var sinImpl = function(property, settings) {
             return cosOrSin(property, settings, Math.sin);
         };
 
-        this.cosImpl = function(property, settings) {
+        var cosImpl = function(property, settings) {
             return cosOrSin(property, settings, Math.cos);
         };
 
@@ -71,7 +71,7 @@ define(function() {
         };
 
 
-        this.fallImpl = function(property, settings) {
+        var fallImpl = function(property, settings) {
             return function() {
                 var gravity = util.getOrDefault(settings.gravity, 9.81);
                 var speed = util.getOrDefault(settings.speed, 1);
@@ -117,7 +117,19 @@ define(function() {
             };
 
         };
+        
+        var availableEffects = {
+            fall: fallImpl,
+            sin: sinImpl,
+            cos: cosImpl,
+            static: staticImpl,
+            linear: linearImpl
+        };        
+        
+        this.getEffect = function(effectName){
+            return util.getOrDefault(availableEffects[effectName], linearImpl);
+        }
     };
     return new Effects();
-    
+
 });
