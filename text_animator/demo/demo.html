@@ -84,67 +84,7 @@
 
                 var canvas1 = document.getElementById("canvas1");
 
-                var rocket = new animator.textStream("R", "EQ", "UIREJS").
-                        map(function(animation, index) {
-                    return animation
-                            .font("Arial")
-                            .fontSize(20)
-                            .x(400 - Math.pow(index, 2) * 7)
-                            .y(500 + index * 15)
-                            .rgba({"red": 255, "green": 0, "blue": 0})
-                            .static({startTime: 0, duration: 1000})
-                            //lift off
-                            .scrollY({startTime: 1000, duration: 4500, change: -350, effectName: "sin", period: 14000})
-                            .rotate({startTime: 5000, duration: 1000, change: 90 * Math.PI / 180})
-                            .scrollX({startTime: 5000, duration: 1000, change: index === 0 ? 10 : 0})
-                            .scrollY({startTime: 5000, duration: 1000, change: -20 * Math.pow(index, 1.5)})
 
-                            //flight
-                            .scrollY({startTime: 6000, duration: 20000, change: -70, effectName: "sin", period: 12000})
-
-                            //land
-                            .rotate({startTime: 26000, duration: 1000, change: -90 * Math.PI / 180})
-                            .scrollX({startTime: 26000, duration: 1000, change: index === 0 ? -10 : 0})
-                            .scrollY({startTime: 26000, duration: 1000, change: 20 * Math.pow(index, 1.5)})
-                            .scrollY({startTime: 27000, duration: 4500, change: 300, effectName: "sin", period: 18000})
-                });
-
-                var background1 = new animator
-                        .textStream()
-                        .generate("ROLLING HILLS. ROLLING HILLS.", function(seed) {
-                    return seed;
-                })
-                        .take(120)
-                        .map(function(animation, index) {
-                    return animation
-                            .font("Arial")
-                            .fontSize(20)
-                            .rgba({"red": 0, "green": 0, "blue": 0})
-                            .x(800)
-                            .y(randomNumber(400, 530))
-                            .scrollX({startTime: 6000 + index * 50, duration: 2000, change: -1000})
-                            .rotate({startTime: 5999, duration: 1, change: 90 * Math.PI / 180})
-                });
-
-
-                var background2 = new animator
-                        .textStream()
-                        .generate("FLAT LAND. FLAT LAND.", function(seed) {
-                    return seed;
-                })
-                        .take(53)
-                        .map(function(animation, index) {
-                    return animation
-                            .font("Arial")
-                            .rgba({"red": 0, "green": 0, "blue": 0})
-                            .fontSize(20)
-                            .x(15 * index)
-                            .y(530)
-                            .rotate({startTime: 0, duration: 1, change: 90 * Math.PI / 180})
-                            .static({startTime: 0, duration: 6000})
-                            .scrollX({startTime: 6000, duration: 2000, change: -1000})
-                            .static({startTime: 6000, duration: 12000});
-                });
 
                 var sun = function(xPos, yPos){
                     return new animator
@@ -165,11 +105,7 @@
                                    .y(yPos + index * 15);
                        });                   
                 }
-                        
-
-                
-                
-                
+                                  
 
                 /*
           ___I_

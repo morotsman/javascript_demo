@@ -1,9 +1,23 @@
-define(["TextAnimation", "util"], function(TextAnimation, util) {
+define(["TextAnimation"], function(TextAnimation) {
+    
+    var lazy = function(fun) {
+            var parameters = [].splice.call(arguments, 1);
+
+            return function() {
+                var args = parameters.concat([].slice.call(arguments, 0));
+                return fun.apply(fun, args);
+            };
+        };
+        
+    var isFunction =  function(obj) {
+            return !!(obj && obj.constructor && obj.call && obj.apply);
+        };    
+    
     function StreamImpl() {
 
         this.generate = function(seed, fun) {
             var loop = function(seed, index) {
-                return new Cons(new TextAnimation({subject: seed}), util.lazy(function() {
+                return new Cons(new TextAnimation({subject: seed}), lazy(function() {
                     return loop(fun(seed, index), index + 1);
                 }));
             };
@@ -13,7 +27,7 @@ define(["TextAnimation", "util"], function(TextAnimation, util) {
 
         this.generateFromStream = function(stream, fun) {
             var loop = function(stream, index) {
-                return new Cons(stream.head(), util.lazy(function() {
+                return new Cons(stream.head(), lazy(function() {
                     return loop(fun(stream, index), index + 1);
                 }));
             };
@@ -27,7 +41,7 @@ define(["TextAnimation", "util"], function(TextAnimation, util) {
                 return this;
             } else {
                 var that = this;
-                return new Cons(fun(this.head(), index), util.lazy(function() {
+                return new Cons(fun(this.head(), index), lazy(function() {
                     return that.tail()._map(fun, index + 1);
                 }));
             }
@@ -37,12 +51,12 @@ define(["TextAnimation", "util"], function(TextAnimation, util) {
             if (this.isEmpty() || number <= 0) {
                 return this;
             } else if (number === 1) {
-                return new Cons(this.head(), util.lazy(function() {
+                return new Cons(this.head(), lazy(function() {
                     return new Empty();
                 }));
             } else {
                 var that = this;
-                return new Cons(this.head(), util.lazy(function() {
+                return new Cons(this.head(), lazy(function() {
                     return that.tail().take(number - 1);
                 }));
             }
@@ -53,7 +67,7 @@ define(["TextAnimation", "util"], function(TextAnimation, util) {
                 return this;
             } else {
                 var that = this;
-                return new Cons(this.head(), util.lazy(function() {
+                return new Cons(this.head(), lazy(function() {
                     return that.tail().takeWhile(predicate);
                 }));
             }
@@ -65,7 +79,7 @@ define(["TextAnimation", "util"], function(TextAnimation, util) {
             } else {
                 var that = this;
                 if (predicate(this.head(), index)) {
-                    return new Cons(this.head(), util.lazy(function() {
+                    return new Cons(this.head(), lazy(function() {
                         return that.tail()._filter(predicate, index + 1);
                     }));
                 } else {
@@ -104,7 +118,7 @@ define(["TextAnimation", "util"], function(TextAnimation, util) {
                 return this;
             } else {
                 var that = this;
-                return new Cons({one: this.head(), two: stream.head()}, util.lazy(function() {
+                return new Cons({one: this.head(), two: stream.head()}, lazy(function() {
                     return that.tail().zip(stream.tail());
                 }));
             }
@@ -156,11 +170,11 @@ define(["TextAnimation", "util"], function(TextAnimation, util) {
                 settings.subject = letters[index];
                 settings.x = settings.x + positions[index];
                 if (letters.length - 1 === index) {
-                    return new Cons(new TextAnimation(settings), util.lazy(function() {
+                    return new Cons(new TextAnimation(settings), lazy(function() {
                         return that.tail().split(fun);
                     }));
                 }
-                return new Cons(new TextAnimation(settings), util.lazy(function() {
+                return new Cons(new TextAnimation(settings), lazy(function() {
                     return loop(head, index + 1);
                 }));
             };
@@ -182,7 +196,7 @@ define(["TextAnimation", "util"], function(TextAnimation, util) {
             return theHead;
         };
         this.tail = function() {
-            if (util.isFunction(theTail)) {
+            if (isFunction(theTail)) {
                 theTail = theTail();
             }
             return theTail;
@@ -278,7 +292,7 @@ define(["TextAnimation", "util"], function(TextAnimation, util) {
             if (source === undefined || source.length === 0) {
                 return new Empty();
             } else {
-                return new Cons(new TextAnimation({subject: source[0]}), util.lazy(function() {
+                return new Cons(new TextAnimation({subject: source[0]}), lazy(function() {
                     return init(source.splice(1));
                 }));
             }
