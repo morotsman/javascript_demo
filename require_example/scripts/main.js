@@ -1,6 +1,5 @@
-require(["controller"], function (controller) {
+require(["animator2", "list"], function (animator2, list) {
     
-    controller.contentUpdated();
     
     
 });

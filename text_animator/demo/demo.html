@@ -63,12 +63,10 @@
 
         <script src="external/impress.js"></script>
         <script src="external/jquery_1_11_1.min.js"></script>
-        <script type="text/javascript" src="text_animator/list.js"></script>
-        <script type="text/javascript" src="text_animator/animator2.js"></script>
+        <script type="text/javascript" src="../scripts/dist/text_animator.min.js"></script>
         <script>impress().init();
 
             $(window).load(function() {
-
 
 
 
@@ -86,7 +84,7 @@
 
                 var canvas1 = document.getElementById("canvas1");
 
-                var rocket = new Animator2.textStream("R", "EQ", "UIREJS").
+                var rocket = new animator.textStream("R", "EQ", "UIREJS").
                         map(function(animation, index) {
                     return animation
                             .font("Arial")
@@ -111,7 +109,7 @@
                             .scrollY({startTime: 27000, duration: 4500, change: 300, effectName: "sin", period: 18000})
                 });
 
-                var background1 = new Animator2
+                var background1 = new animator
                         .textStream()
                         .generate("ROLLING HILLS. ROLLING HILLS.", function(seed) {
                     return seed;
@@ -129,7 +127,7 @@
                 });
 
 
-                var background2 = new Animator2
+                var background2 = new animator
                         .textStream()
                         .generate("FLAT LAND. FLAT LAND.", function(seed) {
                     return seed;
@@ -149,7 +147,7 @@
                 });
 
                 var sun = function(xPos, yPos){
-                    return new Animator2
+                    return new animator
                                .textStream("S","SUN", "SUNSU", "SUN", "S")
                                .map(function(animation, index) {
                            var x = xPos;
@@ -181,7 +179,7 @@
                  */
                 
                 var smallHouse = function(xPosition, yPosition, size){
-                    return new Animator2
+                    return new animator
                         .textStream("   ___I_", "  /\\-_----\\"," /  \\____\\", "| [] |   []   |")
                         .map(function(animation, index) {
                     var x = xPosition;
@@ -206,7 +204,7 @@
                  */
                 
                 var smallHouse2 = function(xPosition, yPosition,size){
-                    return new Animator2
+                    return new animator
                         .textStream("       ~~", "     ~"," _u__", "/____\\", "|  []  []  |", "|  []  ..  |", "'-----' '  '")
                         .map(function(animation, index) {
                     var x = xPosition;
@@ -230,7 +228,7 @@
                  */
                 
                  var tree = function(xPosition, yPosition, size){
-                    return new Animator2
+                    return new animator
                         .textStream("       ###", "     #o###", "  #####o###", "#o#\\# | #/###", "  ###\\ | /#o#", "      # }|{   #", "         }|{")
                         .map(function(animation, index) {
                     var x = xPosition;
@@ -269,7 +267,7 @@
                  */
                 
                  var tree2 = function(xPosition, yPosition, size){
-                    return new Animator2
+                    return new animator
                         .textStream("                        %%%,%%%%%%%", 
                                     "                   , '%%   \\  \\ - *%%%%%%%", 
                                     "  ;%%%%%*%   _%%%%\"", 
@@ -324,7 +322,7 @@
      */            
                 
                  var mountain = function(xPosition, yPosition){
-                    return new Animator2
+                    return new animator
                         .textStream("          /   \\              /'\\       _                              ", 
                                     "     /'.,/     \\_         .,'   \\     / \\_                            ", 
                                     "    /            \\      _/       \\_  /    \\     _                     ",
@@ -353,7 +351,7 @@
 
                 var canvas2 = document.getElementById("canvas2");
                 var demoZeitArray = ["R", "E", "Q", "U", "I", "R", "E", " ", "J", "S "];
-                var vortex = new Animator2.textStream()
+                var vortex = new animator.textStream()
                         .generate(0, function(seed) {
                     return seed + 1;
                 })
@@ -413,8 +411,8 @@
 
                 var slide = 1;
 
-                var slide2Animator = new Animator2.animator(canvas2.getContext("2d"), canvas2, true);
-                var rocketAnimator = new Animator2.animator(canvas1.getContext("2d"), canvas1, true);
+                var slide2Animator = new animator.animator(canvas2.getContext("2d"), canvas2, true);
+                var rocketAnimator = new animator.animator(canvas1.getContext("2d"), canvas1, true);
                 var animate = function() {
                     var timeFromStartSlide2 = slide2Animator.stop();
                     rocketAnimator.stop();
