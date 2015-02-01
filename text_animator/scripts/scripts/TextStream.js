@@ -236,6 +236,13 @@ define(["TextAnimation"], function(TextAnimation) {
                 return animation.scrollX(settings);
             });
         };
+        
+        this.rotate = function(settings) {
+            return this.map(function(animation) {
+                return animation.rotate(settings);
+            });
+        };       
+        
     }
     ;
     //inherit from StreamImpl
@@ -269,15 +276,19 @@ define(["TextAnimation"], function(TextAnimation) {
             return this._forEach(fun, 0);
         };
 
-        this.scrollY = function(startTime, duration, change) {
+        this.scrollY = function(settings) {
             return this;
         };
 
-        this.static = function(startTime, duration) {
+        this.static = function(settings) {
             return this;
         };
 
-        this.scrollX = function(startTime, duration) {
+        this.scrollX = function(settings) {
+            return this;
+        };
+        
+        this.rotate = function(settings) {
             return this;
         };
     }

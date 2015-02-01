@@ -85,7 +85,7 @@ define(["util"], function(util) {
 
                             if (prop.angle !== 0) {
                                 context.translate(Math.floor(prop.x), Math.floor(prop.y));
-                                context.rotate(prop.angle);
+                                context.rotate(prop.angle*Math.PI/180);
                             } else {
                                 context.translate(Math.floor(prop.x), Math.floor(prop.y));
                             }
