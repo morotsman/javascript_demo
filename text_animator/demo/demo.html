@@ -325,7 +325,50 @@
                     });
                 };
                 
-
+                /*
+                |ZZzzz
+                 |
+                 |
+    |ZZzzz      /^\            |ZZzzz
+    |          |~~~|           |
+    |        |^^^^^^^|        / \
+   /^\       |[]+    |       |~~~|
+|^^^^^^^|    |    +[]|       |   |
+|    +[]|/\/\/\/\^/\/\/\/\/|^^^^^^^|
+|+[]+   |~~~~~~~~~~~~~~~~~~|    +[]|
+|       |  []   /^\   []   |+[]+   |
+|   +[]+|  []  || ||  []   |   +[]+|
+|[]+    |      || ||       |[]+    |
+|_______|------------------|_______|
+                 */
+                
+                var castle = function(xPosition, yPosition, size){
+                    return new animator.textStream(
+                            "                          |ZZzzz", 
+                            "                          |", 
+                            "                          |", 
+                            "       |ZZzzz      /^\\                   |ZZzzz",
+                            "       |              |~~~|                 |",
+                            "       |           |^^^^^^^|             / \\",
+                            "      /^\\         | []+        |          |~~~|",
+                            "|^^^^^^^|    |        +[] |            |   |",
+                            "|         +[]|/ \\/ \\/ \\/ \\^/ \\/ \\/ \\/ \\/|^^^^^^^|",
+                            "|+[]+      |~~~~~~~~~~~~|       +[] |",
+                            "|             |    []      /^\\     []     |+[]+      |",
+                            "|      +[]   |    []     || ||     []     |      +[]+|",
+                            "| []+        |           || ||            | []+       |",
+                            "|______|----------------------|______|")
+                            .map(function(animation, index) {
+                    var x = xPosition;
+                    
+                    return animation
+                            .font("Arial")
+                            .rgba({"red": 0, "green": 0, "blue": 0})
+                            .fontSize(size)
+                            .x(x)
+                            .y(yPosition + index * size);
+                    });
+                };
 
 
                 var canvas2 = document.getElementById("canvas2");
@@ -400,126 +443,165 @@
                         //, , {animation: background2, loop: false},
                         rocketAnimator
                                 .start([ 
-                                    //{animation: rocket, loop: true}, 
-                                    {animation: sun(600,1040)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                    
+                                    {animation: sun(600,1130)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1100})
                                                 .static({startTime: 6000, duration: 50000}), 
-                                        loop: false},                                    
-                                    {animation: smallHouse(300, 1500, 17)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
                                         loop: false},  
-                                    {animation: smallHouse(200, 1470, 17)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
-                                        loop: false},
-                                    {animation: smallHouse2(600, 1480, 20)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
-                                        loop: false}, 
-                                    {animation: tree(260, 1450,10)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
-                                        loop: false},                                     
-                                    {animation: tree2(450, 1450, 10)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
-                                        loop: false}, 
-                                     {animation: tree(760, 1450,12)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
-                                        loop: false}, 
-                                    {animation: tree(800, 1470,10)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
-                                        loop: false},  
+                                          
                                     
-                                    {animation: tree(260, 1400,5)
+                                   {animation: mountain(0, 1150, 5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 60000, change: -1000}), 
-                                        loop: false},  
-                                    {animation: tree2(280, 1410,5)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 60000, change: -1000}), 
-                                        loop: false}, 
-                                    
-                                    {animation: tree(400, 1300,5)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 90000, change: -1000}), 
-                                        loop: false}, 
-                                    {animation: tree(300, 1320,5)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 90000, change: -1000}), 
-                                        loop: false},                                      
-                                    {animation: tree2(600, 1310,7)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 90000, change: -1000}), 
-                                        loop: false}, 
-                                    
-                                    
-                                    {animation: mountain(0, 1150, 5)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 120000, change: -1000}),
+                                                .scrollX({startTime: 11000, duration: 35500, change: -250})
+                                                .static({startTime: 46500, duration: 30000}),
                                         loop: false},
                                     {animation: mountain(250, 1140, 5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 120000, change: -1000}),
+                                                .scrollX({startTime: 11000, duration: 35500, change: -250})
+                                                .static({startTime: 46500, duration: 30000}),
                                         loop: false},
                                     {animation: mountain(500, 1120, 5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 120000, change: -1000}),
+                                                .scrollX({startTime: 11000, duration: 35500, change: -250})
+                                                .static({startTime: 46500, duration: 30000}),
                                         loop: false},
                                     {animation: mountain(750, 1150, 5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
-                                                .scrollX({startTime: 11000, duration: 120000, change: -1000}),
+                                                .scrollX({startTime: 11000, duration: 35500, change: -250})
+                                                .static({startTime: 46500, duration: 30000}),
                                         loop: false},  
-                                    
-                                    
                                     {animation: mountain(1000, 150, 5)
-                                                .scrollX({startTime: 11000, duration: 120000, change: -1000}),
+                                                .scrollX({startTime: 11000, duration: 35500, change: -250})
+                                                .static({startTime: 46500, duration: 30000}),
                                         loop: false},                                     
                                      {animation: mountain(1250, 150, 5)
-                                                .scrollX({startTime: 11000, duration: 120000, change: -1000}),
+                                                .scrollX({startTime: 11000, duration: 35500, change: -250})
+                                                .static({startTime: 46500, duration: 30000}),
+                                        loop: false},    
+                                    
+                                    
+                                    {animation: tree(400, 1300,5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 35500, change: -450}), 
+                                        loop: false}, 
+                                    {animation: tree(300, 1320,5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 35500, change: -450}), 
                                         loop: false},                                      
-                                    
-                                    
-                                    
-                                    {animation: smallHouse(1000, 470, 17)
-                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
-                                        loop: false},
-                                    {animation: smallHouse2(1000, 480, 20)
-                                                .scrollX({startTime: 11000, duration: 30000, change: -1000}), 
+                                    {animation: tree2(600, 1310,7)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 35500, change: -450})
+                                                .static({startTime: 46500, duration: 30000}),
+                                        loop: false},                                     
+                                    {animation: tree(1000, 330,5)
+                                        .scrollX({startTime: 11000, duration: 35500, change: -450})
+                                        .static({startTime: 46500, duration: 30000}),
+                                        loop: false},  
+                                    {animation: tree(1050, 330,5)
+                                        .scrollX({startTime: 11000, duration: 35500, change: -450})
+                                        .static({startTime: 46500, duration: 30000}),
+                                        loop: false},                                      
+                                    {animation: tree2(1100, 320,7)
+                                        .scrollX({startTime: 11000, duration: 35500, change: -450})
+                                        .static({startTime: 46500, duration: 30000}),
                                         loop: false},                                     
                                     
-                                    {animation: wing(1175,435, 45)
-                                                .scrollX({startTime: 14500, duration: 30000, change: -1000})
-                                                .rotate({startTime: 0, duration: 40000, change:-360*10}),
-                                                //.static({startTime: 0, duration: 50000}), 
-                                        loop: true},                                     
-                                    {animation: wing(1175,435, 135)
-                                                .scrollX({startTime: 14500, duration: 30000, change: -1000})
-                                                .rotate({startTime: 0, duration: 40000, change:-360*10}), 
-                                                //.static({startTime: 0, duration: 50000}), 
-                                        loop: true},   
-                                    {animation: wing(1175,435, 225)
-                                                .scrollX({startTime: 14500, duration: 30000, change: -1000})
-                                                .rotate({startTime: 0, duration: 40000, change:-360*10}), 
-                                                //.static({startTime: 0, duration: 50000}),
-                                        loop: true},                                    
-                                    {animation: wing(1175,435, 315)
-                                                .scrollX({startTime: 14500, duration: 30000, change: -1000})
-                                                .rotate({startTime: 0, duration: 40000, change:-360*10}), 
-                                                //.static({startTime: 0, duration: 50000}),
-                                        loop: true}, 
-                                    {animation: mill(1150,400)
-                                                .scrollX({startTime: 14500, duration: 30000, change: -1000})
-                                                //.rotate({startTime: 0, duration: 40000, change:-360*10}), 
-                                                .static({startTime: 0, duration: 50000}),
-                                        loop: true}, 
                                     
                                     
+                                     {animation: tree(260, 1400,5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 60000, change: -1100}), 
+                                        loop: false},  
+                                    {animation: tree2(280, 1410,5)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 60000, change: -1100}), 
+                                        loop: false},                                    
+                                    
+  
+                
+                                    {animation: tree(260, 1450,10)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
+                                        loop: false},                                     
+                                    {animation: tree2(450, 1450, 10)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
+                                      loop: false},                                                                                    
+                                    {animation: smallHouse(300, 1500, 17)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
+                                        loop: false},  
+                                    {animation: smallHouse(200, 1470, 17)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
+                                        loop: false},
+                                    {animation: smallHouse2(600, 1480, 20)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
+                                        loop: false}, 
+
+                                     {animation: tree(760, 1450,12)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
+                                        loop: false}, 
+                                    {animation: tree(800, 1470,10)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1000})
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
+                                        loop: false},  
+                                    
+ 
+                                    
+                                    {animation: smallHouse(1000, 470, 17)
+                                                .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
+                                        loop: false},
+                                    {animation: smallHouse2(1000, 480, 20)
+                                                .scrollX({startTime: 12500, duration: 30000, change: -1100}), 
+                                        loop: false},  
+                                    {animation: tree(1000, 470,15)
+                                        .scrollX({startTime: 14000, duration: 30000, change: -1100}), 
+                                        loop: false},                                   
+                                    
+                                    {animation: wing(1025,435, 45)
+                                                .scrollX({startTime: 16500, duration: 30000, change: -1100})
+                                                .rotate({startTime: 16500, duration: 30000, change:-360*10}),
+                                        loop: false},                                     
+                                    {animation: wing(1025,435, 135)
+                                                .scrollX({startTime: 16500, duration: 30000, change: -1100})
+                                                .rotate({startTime: 16500, duration: 30000, change:-360*10}), 
+                                        loop: false},   
+                                    {animation: wing(1025,435, 225)
+                                                .scrollX({startTime: 16500, duration: 30000, change: -1100})
+                                                .rotate({startTime: 16500, duration: 30000, change:-360*10}), 
+                                        loop: false},                                    
+                                    {animation: wing(1025,435, 315)
+                                                .scrollX({startTime: 16500, duration: 30000, change: -1100})
+                                                .rotate({startTime: 16500, duration: 30000, change:-360*10}), 
+                                        loop: false}, 
+                                    {animation: mill(1000,400)
+                                                .scrollX({startTime: 16500, duration: 30000, change: -1100}),
+                                        loop: false}, 
+                                    
+                                    
+    
+                                    
+                                    
+                                    {animation: smallHouse(1200, 470, 17)
+                                                .scrollX({startTime: 16500, duration: 30000, change: -1100}) 
+                                                .static({startTime: 46500, duration: 30000}),
+                                        loop: false},
+                                    {animation: smallHouse(1400, 430, 17)
+                                                .scrollX({startTime: 16500, duration: 30000, change: -1100}) 
+                                                .static({startTime: 46500, duration: 30000}),
+                                        loop: false},                                   
+                                    {animation: tree2(1300, 450,7)
+                                        .scrollX({startTime: 16500, duration: 30000, change: -1100})
+                                        .static({startTime: 46500, duration: 30000}),
+                                        loop: false},                                     
                                    
-                              
+                                     {animation: castle(1550,350, 20)
+                                        .scrollX({startTime: 16500, duration: 30000, change: -1100})
+                                        .static({startTime: 46500, duration: 30000}),
+                                        loop: false}, 
                                     
                                 ]);
                     } else if (getActiveSlide() === "animated_2") {
