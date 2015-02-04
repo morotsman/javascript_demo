@@ -88,40 +88,40 @@
 
                 var sun = function(xPos, yPos){
                     return new animator
-                               .textStream("S","SUN", "SUNSU", "SUN", "S")
+                               .textStream(
+                                " SUN", 
+                                "SUNSU", 
+                                " SUN")
                                .map(function(animation, index) {
-                           var x = xPos;
-                           if (index === 1 || index ===3) {
-                               x = x - 15;
-                           }
-                           if (index === 2) {
-                               x = x - 30;
-                           }
                            return animation
-                                   .font("Arial")
+                                   .font("monospace")
                                    .rgba({"red": 240, "green": 204, "blue": 0})
                                    .fontSize(20)
-                                   .x(x)
+                                   .x(xPos)
                                    .y(yPos + index * 15);
                        });                   
                 }
                                   
 
                 /*
-          ___I_
-         /\-_--\
+          ___I_  
+         /\-_--\ 
         /  \_-__\
         |[]| [] |
                  */
                 
                 var smallHouse = function(xPosition, yPosition, size){
                     return new animator
-                        .textStream("   ___I_", "  /\\-_----\\"," /  \\____\\", "| [] |   []   |")
+                        .textStream("  ___I_  ",
+                                    " /\\-_--\\ ",
+                                    "/  \\_-__\\",
+                                    "|[]| [] |"
+                        )
                         .map(function(animation, index) {
                     var x = xPosition;
 
                     return animation
-                            .font("Arial")
+                            .font("monospace")
                             .rgba({"red": 0, "green": 0, "blue": 0})
                             .fontSize(size)
                             .x(x)
@@ -131,8 +131,8 @@
                 
                 /*
                           ~~
-                        ~
-                      _u__
+                        ~   
+                      _u__  
                      /____\
                      |[][]|
                      |[]..|
@@ -141,12 +141,18 @@
                 
                 var smallHouse2 = function(xPosition, yPosition,size){
                     return new animator
-                        .textStream("       ~~", "     ~"," _u__", "/____\\", "|  []  []  |", "|  []  ..  |", "'-----' '  '")
+                        .textStream("      ~~", 
+                                    "   ~",
+                                    " _u__", 
+                                    "/____\\", 
+                                    "|[][]|", 
+                                    "|[]..|", 
+                                    "'--'''")
                         .map(function(animation, index) {
                     var x = xPosition;
 
                     return animation
-                            .font("Arial")
+                            .font("monospace")
                             .rgba({"red": 0, "green": 0, "blue": 0})
                             .fontSize(size)
                             .x(x)
@@ -165,12 +171,19 @@
                 
                  var tree = function(xPosition, yPosition, size){
                     return new animator
-                        .textStream("       ###", "     #o###", "  #####o###", "#o#\\# | #/###", "  ###\\ | /#o#", "      # }|{   #", "         }|{")
+                        .textStream(
+                        "    ###", 
+                        "   #o###", 
+                        " #####o###", 
+                        "#o#\\#|#/###", 
+                        " ###\\|/#o#", 
+                        "  # }|{  #", 
+                        "    }|{")
                         .map(function(animation, index) {
                     var x = xPosition;
                     
                     return animation
-                            .font("Arial")
+                            .font("monospace")
                             .rgba({"red": 0, "green": 0, "blue": 0})
                             .fontSize(size)
                             .x(x)
@@ -204,20 +217,20 @@
                 
                  var tree2 = function(xPosition, yPosition, size){
                     return new animator
-                        .textStream("                        %%%,%%%%%%%", 
-                                    "                   , '%%   \\  \\ - *%%%%%%%", 
-                                    "  ;%%%%%*%   _%%%%\"", 
-                                    "    ,%%%              \\(_.*%%%%.",
-                                    "    % *%%, ,%%%%*(        '", 
-                                    "%^           ,*%%%   ) \\ |,%%*%,_", 
-                                    "            *%            \\/  #).-\"*%%*", 
-                                    "                          _.)  , / *%,",
-                                    "                            /)# (")
+                        .textStream("          %%%,%%%%%%%", 
+                                    "       ,'%%  \\\\-*%%%%%%%", 
+                                    " ;%%%%%*%   _%%%%\"", 
+                                    "  ,%%%       \\(_.*%%%%.",
+                                    "  % *%%, ,%%%%*(    '", 
+                                    "%^     ,*%%% )\\|,%%*%,_", 
+                                    "     *%    \/ #).-\"*%%*", 
+                                    "         _.) ,/ *%,",
+                                    "          /)#(")
                         .map(function(animation, index) {
                     var x = xPosition;
                     
                     return animation
-                            .font("Arial")
+                            .font("monospace")
                             .rgba({"red": 0, "green": 0, "blue": 0})
                             .fontSize(size)
                             .x(x)
@@ -273,9 +286,9 @@
                     var x = xPosition;
                     
                     return animation
-                            .font("Arial")
+                            .font("monospace")
                             .rgba({"red": 0, "green": 0, "blue": 0})
-                            .fontSize(20)
+                            .fontSize(15)
                             .x(x)
                             .y(yPosition + index * 20)
                             ;
@@ -312,12 +325,20 @@
                  */
                 
                 var mill = function(xPosition, yPosition){
-                    return new animator.textStream("     ;", "  '(_)'", " / [+] \\", "/        \\", "|   _   |", "|  [_]  |", "/III   III\\")
+                    return new animator.textStream(
+                            "    ;", 
+                            "  ;(_);", 
+                            "   '_' ", 
+                            "  /[+]\\", 
+                            " /     \\", 
+                            " |  _  |", 
+                            " | [_] |",
+                            "/III III\\")
                             .map(function(animation, index) {
                     var x = xPosition;
                     
                     return animation
-                            .font("Arial")
+                            .font("monospace")
                             .rgba({"red": 0, "green": 0, "blue": 0})
                             .fontSize(20)
                             .x(x)
@@ -344,25 +365,25 @@
                 
                 var castle = function(xPosition, yPosition, size){
                     return new animator.textStream(
-                            "                          |ZZzzz", 
-                            "                          |", 
-                            "                          |", 
-                            "       |ZZzzz      /^\\                   |ZZzzz",
-                            "       |              |~~~|                 |",
-                            "       |           |^^^^^^^|             / \\",
-                            "      /^\\         | []+        |          |~~~|",
-                            "|^^^^^^^|    |        +[] |            |   |",
-                            "|         +[]|/ \\/ \\/ \\/ \\^/ \\/ \\/ \\/ \\/|^^^^^^^|",
-                            "|+[]+      |~~~~~~~~~~~~|       +[] |",
-                            "|             |    []      /^\\     []     |+[]+      |",
-                            "|      +[]   |    []     || ||     []     |      +[]+|",
-                            "| []+        |           || ||            | []+       |",
-                            "|______|----------------------|______|")
+                            "                |ZZzzz", 
+                            "                 |", 
+                            "                 |", 
+                            "    |ZZzzz      /^\\            |ZZzzz",
+                            "    |          |~~~|           |",
+                            "    |        |^^^^^^^|        / \\",
+                            "   /^\       |[]+    |       |~~~|",
+                            "|^^^^^^^|    |    +[]|       |   |",
+                            "|    +[]|/\\/\\/\\/\\^/\\/\\/\\/\\/|^^^^^^^|",
+                            "|+[]+   |~~~~~~~~~~~~~~~~~~|    +[]|",
+                            "|       |  []   /^\   []   |+[]+   |",
+                            "|   +[]+|  []  || ||  []   |   +[]+|",
+                            "|[]+    |      || ||       |[]+    |",
+                            "|_______|------------------|_______|")
                             .map(function(animation, index) {
                     var x = xPosition;
                     
                     return animation
-                            .font("Arial")
+                            .font("monospace")
                             .rgba({"red": 0, "green": 0, "blue": 0})
                             .fontSize(size)
                             .x(x)
@@ -561,19 +582,19 @@
                                         .scrollX({startTime: 14000, duration: 30000, change: -1100}), 
                                         loop: false},                                   
                                     
-                                    {animation: wing(1025,435, 45)
+                                    {animation: wing(1048,455, 45)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                                 .rotate({startTime: 16500, duration: 30000, change:-360*10}),
                                         loop: false},                                     
-                                    {animation: wing(1025,435, 135)
+                                    {animation: wing(1048,455, 135)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                                 .rotate({startTime: 16500, duration: 30000, change:-360*10}), 
                                         loop: false},   
-                                    {animation: wing(1025,435, 225)
+                                    {animation: wing(1048,455, 225)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                                 .rotate({startTime: 16500, duration: 30000, change:-360*10}), 
                                         loop: false},                                    
-                                    {animation: wing(1025,435, 315)
+                                    {animation: wing(1048,455, 315)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                                 .rotate({startTime: 16500, duration: 30000, change:-360*10}), 
                                         loop: false}, 
@@ -598,7 +619,7 @@
                                         .static({startTime: 46500, duration: 30000}),
                                         loop: false},                                     
                                    
-                                     {animation: castle(1550,350, 20)
+                                     {animation: castle(1550,350, 15)
                                         .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                         .static({startTime: 46500, duration: 30000}),
                                         loop: false}, 
