@@ -241,7 +241,19 @@ define(["TextAnimation"], function(TextAnimation) {
             return this.map(function(animation) {
                 return animation.rotate(settings);
             });
-        };       
+        }; 
+        
+        this.fade = function(settings) {
+            return this.map(function(animation) {
+                return animation.fade(settings);
+            });
+        };    
+        
+        this.scale = function(settings) {
+            return this.map(function(animation) {
+                return animation.scale(settings);
+            });
+        };          
         
     }
     ;
@@ -291,6 +303,14 @@ define(["TextAnimation"], function(TextAnimation) {
         this.rotate = function(settings) {
             return this;
         };
+        
+        this.fade = function(settings) {
+            return this;
+        };    
+        
+        this.scale = function(settings) {
+            return this;
+        };          
     }
     ;
 
