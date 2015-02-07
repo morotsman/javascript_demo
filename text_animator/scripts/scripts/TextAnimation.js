@@ -15,7 +15,6 @@ define(["util", "list", "effects"], function(util, List, effetcImpls) {
         var scale = util.getOrDefault(_config.scale, 1);
         var angle = util.getOrDefault(_config.angle, 0);
         var rgba = util.getOrDefault(_config.rgba, {red: 0, green: 0, blue: 0});
-        var startTrigger = util.getOrDefault(_config.startTrigger, function(){ return true;});
 
         var copyConfig = function() {
             return {
@@ -31,16 +30,10 @@ define(["util", "list", "effects"], function(util, List, effetcImpls) {
                 scale: scale,
                 duration: duration,
                 angle: angle,
-                rgba: rgba,
-                startTrigger: startTrigger
+                rgba: rgba
             };
         };
-        
-        this.startTrigger = function(fun){
-            var copyOfConfig = copyConfig();
-            copyOfConfig.startTrigger = fun;
-            return new TextAnimation(copyOfConfig);           
-        };
+
 
         //remove
         this.getSettings = function() {

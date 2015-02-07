@@ -79,48 +79,39 @@ define(["util"], function(util) {
         this.start = function(animations, startTime) {
             var that = this;
             var runtimeAnimations = this.createRuntimeAnimations(animations);
-            var startTimes = {};
-            var loopTimes = {};
-            var timesFromStart = {};            
-            var stopTimes = {};
-            var loop = {};
-            
+            var timeFromStart;
+            var stopTimes = [];
+
             for (var i = 0; i < animations.length; i++) {
                 var stopTime = animations[i].textStream.foldLeft(0, function(acc, animation) {
                     return Math.max(acc, animation.getStopTime());
                 });
                 console.log(stopTime);
-                stopTimes[i] = stopTime;
-                loop[i] = animations[i].loop;
+                stopTimes.push(stopTime);
             }
 
-            
-            
-            var runner = function(now) {
 
+
+            var runner = function(now) {
+                startTime = startTime === undefined ? new Date().getTime() : startTime;
+                timeFromStart = now - startTime;
+                
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                for (var i = 0; i < runtimeAnimations.length; i++) {
-                    startTimes[i] = startTimes[i] === undefined ? new Date().getTime() : startTimes[i];
-                    startTimes[i] = loopTimes[i] === undefined ? startTimes[i] : loopTimes[i];
-                    timesFromStart[i] = now - startTimes[i];
-                    
+                for (var i = 0; i < runtimeAnimations.length; i++) {                   
                     for (var j = 0; j < runtimeAnimations[i].length; j++) {
                         var animation = runtimeAnimations[i][j];
-                        if ((timesFromStart[i] < animation.getStopTime()) && timesFromStart[i] > animation.getStartTime()) {
-                            var prop = that.apply(timesFromStart[i], animation);
+                        if ((timeFromStart < animation.getStopTime()) && timeFromStart > animation.getStartTime()) {
+                            var prop = that.apply(timeFromStart, animation);
                             render(prop);
                         }
                     }
                     //handle loop
-                    if ((timesFromStart[i] > stopTimes[i])) {
-                        console.log("i: " + i + " loop: " + loop[i]);
-                        if (loop[i]) {
-                            loopTimes[i] = new Date().getTime();
-                            runtimeAnimations[i] = that.createRuntimeAnimations([animations[i]])[0];//TODO fix this later
-                        } else {//remove
-                            runtimeAnimations.splice(i, 1);
-                            console.log("Removing: " + i);
-                        }
+                    if ((timeFromStart > stopTimes[i])) {
+
+                        runtimeAnimations.splice(i, 1);
+                        stopTimes.splice(i, 1);
+                        console.log("Removing: " + i + " " + timeFromStart + " " + stopTimes[i]);
+
 
                         if (runtimeAnimations.length === 0) {
                             return;

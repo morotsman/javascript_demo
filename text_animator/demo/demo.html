@@ -468,8 +468,8 @@
                                     
                                     {textStream: sun(600,1130)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1100, startTrigger: function(){ console.log("hepp")}})
-                                                .scrollY({startTime: 6000, duration: 6000, change:1100,startTrigger: function(){ console.log("hepp2")}}), 
-                                        loop: true},  
+                                                .static({startTime: 6000, duration: 50000}), 
+                                        loop: false},  
                                           
                                    
                                    {textStream: mountain(0, 1150, 5)
@@ -618,7 +618,7 @@
                                     {textStream: tree2(1300, 450,7)
                                         .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                         .static({startTime: 46500, duration: 30000}),
-                                        loop: false},                                     
+                                        loop: false},                                    
                                    
                                      {textStream: castle(1550,350, 15)
                                         .scrollX({startTime: 16500, duration: 30000, change: -1100})
