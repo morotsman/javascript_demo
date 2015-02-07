@@ -61,6 +61,20 @@ define(function() {
                 }
             };
 
+            this.toArray = function() {
+                var loop = function(s, acc) {
+                    if (s.isEmpty) {
+                        return acc;
+                    } else {
+                        acc.push(s.head());
+                        return loop(s.tail(), acc);
+                    }
+
+                };
+
+                return loop(this, new Array());
+            };
+
 
             this.foldLeft = function(initial, fun) {
                 if (this.isEmpty) {

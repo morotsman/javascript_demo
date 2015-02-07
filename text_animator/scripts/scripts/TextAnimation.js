@@ -15,6 +15,7 @@ define(["util", "list", "effects"], function(util, List, effetcImpls) {
         var scale = util.getOrDefault(_config.scale, 1);
         var angle = util.getOrDefault(_config.angle, 0);
         var rgba = util.getOrDefault(_config.rgba, {red: 0, green: 0, blue: 0});
+        var startTrigger = util.getOrDefault(_config.startTrigger, function(){ return true;});
 
         var copyConfig = function() {
             return {
@@ -30,8 +31,15 @@ define(["util", "list", "effects"], function(util, List, effetcImpls) {
                 scale: scale,
                 duration: duration,
                 angle: angle,
-                rgba: rgba
+                rgba: rgba,
+                startTrigger: startTrigger
             };
+        };
+        
+        this.startTrigger = function(fun){
+            var copyOfConfig = copyConfig();
+            copyOfConfig.startTrigger = fun;
+            return new TextAnimation(copyOfConfig);           
         };
 
         //remove
@@ -105,12 +113,11 @@ define(["util", "list", "effects"], function(util, List, effetcImpls) {
 
         var effect = function(property, settings, fun) {
             var selectedEffect = effetcImpls.getEffect(settings.effectName);
-            var startTime = settings.startTime;
-            var duration = settings.duration;
             var copyOfConfig = copyConfig();
             copyOfConfig.effects = effects.Cons(selectedEffect(property, settings, fun));
-            copyOfConfig.startTime = Math.min(copyOfConfig.startTime, startTime);
-            copyOfConfig.stopTime = Math.max(copyOfConfig.stopTime, startTime + duration);
+            copyOfConfig.startTime = Math.min(copyOfConfig.startTime, settings.startTime);
+            copyOfConfig.stopTime = Math.max(copyOfConfig.stopTime, settings.startTime + settings.duration);
+            copyOfConfig.startTrigger = settings.startTrigger;
             return new TextAnimation(copyOfConfig);
         };
 

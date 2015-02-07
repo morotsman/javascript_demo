@@ -394,6 +394,7 @@
 
                 var canvas2 = document.getElementById("canvas2");
                 var demoZeitArray = ["R", "E", "Q", "U", "I", "R", "E", " ", "J", "S "];
+                
                 var vortex = new animator.textStream()
                         .generate(0, function(seed) {
                     return seed + 1;
@@ -465,140 +466,140 @@
                         rocketAnimator
                                 .start([ 
                                     
-                                    {animation: sun(600,1130)
-                                                .scrollY({startTime: 0, duration: 6000, change: -1100})
-                                                .static({startTime: 6000, duration: 50000}), 
-                                        loop: false},  
+                                    {textStream: sun(600,1130)
+                                                .scrollY({startTime: 0, duration: 6000, change: -1100, startTrigger: function(){ console.log("hepp")}})
+                                                .scrollY({startTime: 6000, duration: 6000, change:1100,startTrigger: function(){ console.log("hepp2")}}), 
+                                        loop: true},  
                                           
-                                    
-                                   {animation: mountain(0, 1150, 5)
+                                   
+                                   {textStream: mountain(0, 1150, 5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 35500, change: -250})
                                                 .static({startTime: 46500, duration: 30000}),
                                         loop: false},
-                                    {animation: mountain(250, 1140, 5)
+                                    {textStream: mountain(250, 1140, 5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 35500, change: -250})
                                                 .static({startTime: 46500, duration: 30000}),
                                         loop: false},
-                                    {animation: mountain(500, 1120, 5)
+                                    {textStream: mountain(500, 1120, 5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 35500, change: -250})
                                                 .static({startTime: 46500, duration: 30000}),
                                         loop: false},
-                                    {animation: mountain(750, 1150, 5)
+                                    {textStream: mountain(750, 1150, 5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 35500, change: -250})
                                                 .static({startTime: 46500, duration: 30000}),
                                         loop: false},  
-                                    {animation: mountain(1000, 150, 5)
+                                    {textStream: mountain(1000, 150, 5)
                                                 .scrollX({startTime: 11000, duration: 35500, change: -250})
                                                 .static({startTime: 46500, duration: 30000}),
                                         loop: false},                                     
-                                     {animation: mountain(1250, 150, 5)
+                                     {textStream: mountain(1250, 150, 5)
                                                 .scrollX({startTime: 11000, duration: 35500, change: -250})
                                                 .static({startTime: 46500, duration: 30000}),
                                         loop: false},    
                                     
                                     
-                                    {animation: tree(400, 1300,5)
+                                    {textStream: tree(400, 1300,5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 35500, change: -450}), 
                                         loop: false}, 
-                                    {animation: tree(300, 1320,5)
+                                    {textStream: tree(300, 1320,5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 35500, change: -450}), 
                                         loop: false},                                      
-                                    {animation: tree2(600, 1310,7)
+                                    {textStream: tree2(600, 1310,7)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 35500, change: -450})
                                                 .static({startTime: 46500, duration: 30000}),
                                         loop: false},                                     
-                                    {animation: tree(1000, 330,5)
+                                    {textStream: tree(1000, 330,5)
                                         .scrollX({startTime: 11000, duration: 35500, change: -450})
                                         .static({startTime: 46500, duration: 30000}),
                                         loop: false},  
-                                    {animation: tree(1050, 330,5)
+                                    {textStream: tree(1050, 330,5)
                                         .scrollX({startTime: 11000, duration: 35500, change: -450})
                                         .static({startTime: 46500, duration: 30000}),
                                         loop: false},                                      
-                                    {animation: tree2(1100, 320,7)
+                                    {textStream: tree2(1100, 320,7)
                                         .scrollX({startTime: 11000, duration: 35500, change: -450})
                                         .static({startTime: 46500, duration: 30000}),
                                         loop: false},                                     
                                     
                                     
                                     
-                                     {animation: tree(260, 1400,5)
+                                     {textStream: tree(260, 1400,5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 60000, change: -1100}), 
                                         loop: false},  
-                                    {animation: tree2(280, 1410,5)
+                                    {textStream: tree2(280, 1410,5)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 60000, change: -1100}), 
                                         loop: false},                                    
                                     
   
                 
-                                    {animation: tree(260, 1450,10)
+                                    {textStream: tree(260, 1450,10)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
                                         loop: false},                                     
-                                    {animation: tree2(450, 1450, 10)
+                                    {textStream: tree2(450, 1450, 10)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
                                       loop: false},                                                                                    
-                                    {animation: smallHouse(300, 1500, 17)
+                                    {textStream: smallHouse(300, 1500, 17)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
                                         loop: false},  
-                                    {animation: smallHouse(200, 1470, 17)
+                                    {textStream: smallHouse(200, 1470, 17)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
                                         loop: false},
-                                    {animation: smallHouse2(600, 1480, 20)
+                                    {textStream: smallHouse2(600, 1480, 20)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
                                         loop: false}, 
 
-                                     {animation: tree(760, 1450,12)
+                                     {textStream: tree(760, 1450,12)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
                                         loop: false}, 
-                                    {animation: tree(800, 1470,10)
+                                    {textStream: tree(800, 1470,10)
                                                 .scrollY({startTime: 0, duration: 6000, change: -1000})
                                                 .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
                                         loop: false},  
                                     
  
                                     
-                                    {animation: smallHouse(1000, 470, 17)
+                                    {textStream: smallHouse(1000, 470, 17)
                                                 .scrollX({startTime: 11000, duration: 30000, change: -1100}), 
                                         loop: false},
-                                    {animation: smallHouse2(1000, 480, 20)
+                                    {textStream: smallHouse2(1000, 480, 20)
                                                 .scrollX({startTime: 12500, duration: 30000, change: -1100}), 
                                         loop: false},  
-                                    {animation: tree(1000, 470,15)
+                                    {textStream: tree(1000, 470,15)
                                         .scrollX({startTime: 14000, duration: 30000, change: -1100}), 
                                         loop: false},                                   
                                     
-                                    {animation: wing(1048,455, 45)
+                                    {textStream: wing(1048,455, 45)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                                 .rotate({startTime: 16500, duration: 30000, change:-360*10}),
                                         loop: false},                                     
-                                    {animation: wing(1048,455, 135)
+                                    {textStream: wing(1048,455, 135)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                                 .rotate({startTime: 16500, duration: 30000, change:-360*10}), 
                                         loop: false},   
-                                    {animation: wing(1048,455, 225)
+                                    {textStream: wing(1048,455, 225)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                                 .rotate({startTime: 16500, duration: 30000, change:-360*10}), 
                                         loop: false},                                    
-                                    {animation: wing(1048,455, 315)
+                                    {textStream: wing(1048,455, 315)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                                 .rotate({startTime: 16500, duration: 30000, change:-360*10}), 
                                         loop: false}, 
-                                    {animation: mill(1000,400)
+                                    {textStream: mill(1000,400)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100}),
                                         loop: false}, 
                                     
@@ -606,20 +607,20 @@
     
                                     
                                     
-                                    {animation: smallHouse(1200, 470, 17)
+                                    {textStream: smallHouse(1200, 470, 17)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100}) 
                                                 .static({startTime: 46500, duration: 30000}),
                                         loop: false},
-                                    {animation: smallHouse(1400, 430, 17)
+                                    {textStream: smallHouse(1400, 430, 17)
                                                 .scrollX({startTime: 16500, duration: 30000, change: -1100}) 
                                                 .static({startTime: 46500, duration: 30000}),
                                         loop: false},                                   
-                                    {animation: tree2(1300, 450,7)
+                                    {textStream: tree2(1300, 450,7)
                                         .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                         .static({startTime: 46500, duration: 30000}),
                                         loop: false},                                     
                                    
-                                     {animation: castle(1550,350, 15)
+                                     {textStream: castle(1550,350, 15)
                                         .scrollX({startTime: 16500, duration: 30000, change: -1100})
                                         .static({startTime: 46500, duration: 30000}),
                                         loop: false}, 
@@ -627,7 +628,7 @@
                                     
                                 ]);
                     } else if (getActiveSlide() === "animated_2") {
-                        slide2Animator.start([{animation: vortex}], new Date().getTime() - timeFromStartSlide2);
+                        slide2Animator.start([{textStream: vortex}], new Date().getTime() - timeFromStartSlide2);
                     }
                 };
 

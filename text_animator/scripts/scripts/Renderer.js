@@ -31,19 +31,19 @@ define(["util"], function(util) {
             var result = new Array();
 
             for (var i = 0; i < animations.length; i++) {
-                var tmp = animations[i].animation.foldLeft(new Array(), function(acc, animation) {
-                    var copyOfAnimations = animation.copy();
+                var elements = animations[i].textStream.foldLeft(new Array(), function(acc, element) {
+                    var copyOfElement = element.copy();
 
-                    copyOfAnimations.runtimeEffects = animation.getEffects().foldLeft(new Array(), function(acc, effect) {
+                    copyOfElement.runtimeEffects = element.getEffects().foldLeft(new Array(), function(acc, effect) {
                         acc.push(effect());
                         return acc;
 
                     });
 
-                    acc.push(copyOfAnimations);
+                    acc.push(copyOfElement);
                     return acc;
                 });
-                result.push(tmp);
+                result.push(elements);
 
             }
 
@@ -77,42 +77,52 @@ define(["util"], function(util) {
 
 
         this.start = function(animations, startTime) {
+            var that = this;
+            var runtimeAnimations = this.createRuntimeAnimations(animations);
+            var startTimes = {};
+            var loopTimes = {};
+            var timesFromStart = {};            
+            var stopTimes = {};
+            var loop = {};
+            
             for (var i = 0; i < animations.length; i++) {
-                var stopTime = animations[i].animation.foldLeft(0, function(acc, animation) {
+                var stopTime = animations[i].textStream.foldLeft(0, function(acc, animation) {
                     return Math.max(acc, animation.getStopTime());
                 });
                 console.log(stopTime);
-                animations[i].animation.stopTime = stopTime;
+                stopTimes[i] = stopTime;
+                loop[i] = animations[i].loop;
             }
-            var that = this;
-            var runtimeAnimationsArray = this.createRuntimeAnimations(animations);
+
+            
+            
             var runner = function(now) {
 
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                for (var i = 0; i < runtimeAnimationsArray.length; i++) {
-                    animations[i].animation.startTime = animations[i].animation.startTime === undefined ? new Date().getTime() : animations[i].animation.startTime;
-                    animations[i].animation.startTime = animations[i].animation.loopTime === undefined ? animations[i].animation.startTime : animations[i].animation.loopTime;
-                    animations[i].animation.timeFromStart = now - animations[i].animation.startTime;
-                    for (var j = 0; j < runtimeAnimationsArray[i].length; j++) {
-                        var animation = runtimeAnimationsArray[i][j];
-                        if ((animations[i].animation.timeFromStart < animation.getStopTime()) && animations[i].animation.timeFromStart > animation.getStartTime()) {
-                            var prop = that.apply(animations[i].animation.timeFromStart, animation);
+                for (var i = 0; i < runtimeAnimations.length; i++) {
+                    startTimes[i] = startTimes[i] === undefined ? new Date().getTime() : startTimes[i];
+                    startTimes[i] = loopTimes[i] === undefined ? startTimes[i] : loopTimes[i];
+                    timesFromStart[i] = now - startTimes[i];
+                    
+                    for (var j = 0; j < runtimeAnimations[i].length; j++) {
+                        var animation = runtimeAnimations[i][j];
+                        if ((timesFromStart[i] < animation.getStopTime()) && timesFromStart[i] > animation.getStartTime()) {
+                            var prop = that.apply(timesFromStart[i], animation);
                             render(prop);
                         }
                     }
                     //handle loop
-                    if ((animations[i].animation.timeFromStart > animations[i].animation.stopTime)) {
-                        console.log("i: " + i + " loop: " + animations[i].loop);
-                        if (animations[i].loop) {
-                            animations[i].animation.loopTime = new Date().getTime();
-                            runtimeAnimationsArray[i] = that.createRuntimeAnimations([animations[i]])[0];//TODO fix this later
+                    if ((timesFromStart[i] > stopTimes[i])) {
+                        console.log("i: " + i + " loop: " + loop[i]);
+                        if (loop[i]) {
+                            loopTimes[i] = new Date().getTime();
+                            runtimeAnimations[i] = that.createRuntimeAnimations([animations[i]])[0];//TODO fix this later
                         } else {//remove
-                            runtimeAnimationsArray.splice(i, 1);
-                            animations.splice(i, 1);
+                            runtimeAnimations.splice(i, 1);
                             console.log("Removing: " + i);
                         }
 
-                        if (runtimeAnimationsArray.length === 0) {
+                        if (runtimeAnimations.length === 0) {
                             return;
                         }
                     }
