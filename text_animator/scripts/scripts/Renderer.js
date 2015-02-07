@@ -16,7 +16,7 @@ define(["util"], function(util) {
 
         this.apply = function(timeFromStart, animation) {
             var properties = animation.getSettings();
-            var lastTickProperties = animation.lastTickProperties?animation.lastTickProperties:properties;
+            var lastTickProperties = animation.lastTickProperties ? animation.lastTickProperties : properties;
             var modifiedProperties = properties;
             for (var i = 0; i < animation.runtimeEffects.length; i++) {
                 modifiedProperties = animation.runtimeEffects[i](modifiedProperties, timeFromStart, lastTickProperties);
@@ -58,6 +58,23 @@ define(["util"], function(util) {
         };
 
 
+        var render = function(prop) {
+            context.save();
+            context.font = Math.floor(prop.scale * prop.fontSize) + "px " + prop.font;
+            context.fillStyle = "rgba(" + prop.rgba.red + "," + prop.rgba.green + "," + prop.rgba.blue + ", " + Math.floor(prop.alpha) + ")";
+
+            if (prop.angle !== 0) {
+                context.translate(Math.floor(prop.x), Math.floor(prop.y));
+                context.rotate(prop.angle * Math.PI / 180);
+            } else {
+                context.translate(Math.floor(prop.x), Math.floor(prop.y));
+            }
+
+            context.fillText(prop.subject, 0, 0);
+
+            context.restore();
+        };
+
 
         this.start = function(animations, startTime) {
             for (var i = 0; i < animations.length; i++) {
@@ -80,20 +97,7 @@ define(["util"], function(util) {
                         var animation = runtimeAnimationsArray[i][j];
                         if ((animations[i].animation.timeFromStart < animation.getStopTime()) && animations[i].animation.timeFromStart > animation.getStartTime()) {
                             var prop = that.apply(animations[i].animation.timeFromStart, animation);
-                            context.save();
-                            context.font = Math.floor(prop.scale * prop.fontSize) + "px " + prop.font;
-                            context.fillStyle = "rgba(" + prop.rgba.red + "," + prop.rgba.green + "," + prop.rgba.blue + ", " + Math.floor(prop.alpha) + ")";
-
-                            if (prop.angle !== 0) {
-                                context.translate(Math.floor(prop.x), Math.floor(prop.y));
-                                context.rotate(prop.angle*Math.PI/180);
-                            } else {
-                                context.translate(Math.floor(prop.x), Math.floor(prop.y));
-                            }
-
-                            context.fillText(prop.subject, 0, 0);
-
-                            context.restore();
+                            render(prop);
                         }
                     }
                     //handle loop
@@ -104,7 +108,7 @@ define(["util"], function(util) {
                             runtimeAnimationsArray[i] = that.createRuntimeAnimations([animations[i]])[0];//TODO fix this later
                         } else {//remove
                             runtimeAnimationsArray.splice(i, 1);
-                            animations.splice(i, 1)
+                            animations.splice(i, 1);
                             console.log("Removing: " + i);
                         }
 
