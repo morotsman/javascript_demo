@@ -91,14 +91,14 @@ define(["util", "list", "effects"], function(util, List, effetcImpls) {
 
         var mapImpl = function(settings, fun) {
             return function() {
-                return function(properties, timeFromStart) {
+                return function(properties, timeFromStart, lastTickProperties) {
                     if (settings.startTime > timeFromStart) {
                         return properties;
                     }
                     if (timeFromStart > (settings.startTime + settings.duration)) {
                         timeFromStart = settings.startTime + settings.duration;
                     }
-                    return fun(properties, settings, timeFromStart);
+                    return fun(properties, settings, timeFromStart, lastTickProperties);
                 };
             };
         };

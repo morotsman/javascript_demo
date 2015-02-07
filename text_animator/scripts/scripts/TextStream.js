@@ -184,6 +184,71 @@ define(["TextAnimation"], function(TextAnimation) {
         this.cons = function(head) {
             return new Cons(new TextAnimation({subject: head}), this);
         };
+        
+        
+        this.scrollY = function(settings) {
+            if (this.isEmpty()) {
+                return this;
+            }            
+            return this._map(function(animation) {
+                return animation
+                        .scrollY(settings);
+            }, 0);
+        };
+
+        this.static = function(settings) {
+            if (this.isEmpty()) {
+                return this;
+            }            
+            return this._map(function(animation) {
+                return animation.static(settings);
+            }, 0);
+        };
+
+        this.scrollX = function(settings) {
+            if (this.isEmpty()) {
+                return this;
+            }            
+            return this._map(function(animation) {
+                return animation.scrollX(settings);
+            }, 0);
+        };
+        
+        this.rotate = function(settings) {
+            if (this.isEmpty()) {
+                return this;
+            }            
+            return this._map(function(animation) {
+                return animation.rotate(settings);
+            }, 0);
+        }; 
+        
+        this.fade = function(settings) {
+            if (this.isEmpty()) {
+                return this;
+            }            
+            return this._map(function(animation) {
+                return animation.fade(settings);
+            }, 0);
+        };    
+        
+        this.scale = function(settings) {
+            if (this.isEmpty()) {
+                return this;
+            }            
+            return this._map(function(animation) {
+                return animation.scale(settings);
+            }, 0);
+        }; 
+        
+        this.effect = function(settings, fun){
+            if (this.isEmpty()) {
+                return this;
+            } 
+            return this._map(function(animation) {
+                return animation.map(settings, fun);
+            }, 0);
+        };
 
     }
     ;
@@ -218,42 +283,7 @@ define(["TextAnimation"], function(TextAnimation) {
             return this._forEach(fun, 0);
         };
 
-        this.scrollY = function(settings) {
-            return this.map(function(animation) {
-                return animation
-                        .scrollY(settings);
-            });
-        };
-
-        this.static = function(settings) {
-            return this.map(function(animation) {
-                return animation.static(settings);
-            });
-        };
-
-        this.scrollX = function(settings) {
-            return this.map(function(animation) {
-                return animation.scrollX(settings);
-            });
-        };
         
-        this.rotate = function(settings) {
-            return this.map(function(animation) {
-                return animation.rotate(settings);
-            });
-        }; 
-        
-        this.fade = function(settings) {
-            return this.map(function(animation) {
-                return animation.fade(settings);
-            });
-        };    
-        
-        this.scale = function(settings) {
-            return this.map(function(animation) {
-                return animation.scale(settings);
-            });
-        };          
         
     }
     ;
@@ -288,29 +318,7 @@ define(["TextAnimation"], function(TextAnimation) {
             return this._forEach(fun, 0);
         };
 
-        this.scrollY = function(settings) {
-            return this;
-        };
-
-        this.static = function(settings) {
-            return this;
-        };
-
-        this.scrollX = function(settings) {
-            return this;
-        };
-        
-        this.rotate = function(settings) {
-            return this;
-        };
-        
-        this.fade = function(settings) {
-            return this;
-        };    
-        
-        this.scale = function(settings) {
-            return this;
-        };          
+           
     }
     ;
 

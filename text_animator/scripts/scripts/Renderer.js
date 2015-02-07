@@ -16,11 +16,12 @@ define(["util"], function(util) {
 
         this.apply = function(timeFromStart, animation) {
             var properties = animation.getSettings();
-
+            var lastTickProperties = animation.lastTickProperties?animation.lastTickProperties:properties;
             var modifiedProperties = properties;
             for (var i = 0; i < animation.runtimeEffects.length; i++) {
-                modifiedProperties = animation.runtimeEffects[i](modifiedProperties, timeFromStart);
+                modifiedProperties = animation.runtimeEffects[i](modifiedProperties, timeFromStart, lastTickProperties);
             }
+            animation.lastTickProperties = modifiedProperties;
 
             return modifiedProperties;
         };
