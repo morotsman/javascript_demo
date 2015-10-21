@@ -27,21 +27,21 @@
                 
                 var myArray = [1,2,3,4,5,6,7,8,9,10];
                 
-                //forEach
+                display("forEach:");
                 myArray.forEach(display);
 
-                //filter()
+                display("filter:");
                 myArray.filter(function(v){
                     return v < 5;
                 }).forEach(display);
               
-                //map()
+                display("map:");
                 myArray.map(function(v){
                     return v*10;
                 }).forEach(display);
                 
                 
-                //reduce() 
+                display("reduce:"); 
                 display(myArray.reduce(function(acc, v){
                     return acc + v;
                 }));
@@ -50,15 +50,15 @@
                     return v % 2 === 0;
                 };                
     
-                //every()
+                display("every:"); 
                 display(myArray.every(isEven));
        
+                display("filter.every:");
                 display(myArray.filter(isEven).every(isEven));
               
-                //some()
+                display("some:");
                 display(myArray.some(isEven));
                 
-                //assignments
                 
             });
             

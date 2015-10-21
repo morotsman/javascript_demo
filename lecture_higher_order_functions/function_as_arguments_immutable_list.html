@@ -1,0 +1,57 @@
+
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div id="logger"> 
+        </div>
+
+
+
+
+
+        <script src="external/jquery.min.js"></script>
+        <script src="function_as_arguments_immutable_list.js"></script>
+        <script src="util.js"></script>
+        <script>
+            $(window).load(function () {
+                var display = function (text) {
+                    $("#logger").append("<p>" + text + "</p>");
+                };
+             
+                
+                
+                var myList = new List(1,2,3);
+                
+                display("original");
+                myList.forEach(display);
+                
+                var times = function(a,b){
+                    return a*b;
+                };
+                
+                var times2 = function(a){
+                    return times(2,a);
+                };
+                
+                display("map");
+                myList.map(times2).forEach(display);
+                
+                
+                
+                display("add an element");
+                myList.cons(4).forEach(display);
+                
+                
+                display("original");
+                myList.forEach(display);
+                
+            });
+            
+            
+        </script>
+    </body>
+</html>

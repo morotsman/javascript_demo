@@ -148,6 +148,20 @@ var util = {
             console.log("Function was running in: " + (endTime-startTime) + " ms.");
             return result;
         };
+    },
+    memoized: function(fun){
+        var cache = {};
+        return function(/*arguments*/){
+            var args = Array.prototype.slice.call(arguments, 0);
+            if(cache[args]){
+                return cache[args];
+            }
+            var result = fun.apply(this,args);
+            cache[args] = result;
+            return result;
+        };
     }
+    
+    
     
 };

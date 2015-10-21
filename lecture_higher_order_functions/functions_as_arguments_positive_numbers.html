@@ -25,40 +25,15 @@
                 var display = function (text) {
                     $("#logger").append("<p>" + text + "</p>");
                 };
- 
-                var plus = function(a, b){
-                    return a + b;    
-                };
-                
-                var minus = function(a,b){
-                    return a - b; 
-                };
-                
-                var times = function(a,b){
-                    return a * b; 
-                };        
-        
-                //example
-                var runner = function(fun){
-                    fun("Exceuted by runner");
-                };
-                
-                runner(function(text){ 
-                    display(text);
-                });
                 
                 
-                var runner2 = function(input, fun){
-                    fun(input);
-                };
-                
-                
-                runner2("Input", display);
+      
                 
                 
                 
+                /************* Can we make a refactoring so that the code duplication is removed? ***************/
                 
-                /*************Assignment 1: refactor the code so that the code duplication is removed***************/
+                 
         
                 var positiveAdd = function(a, b){
                     if(a < 0){
@@ -67,7 +42,7 @@
                     if(b < 0){
                         throw b + " is not positive.";
                     }
-                    var result = plus(a,b);
+                    var result = a + b;
                     if(result < 0){
                         throw "Result was not positive.";
                     }
@@ -81,7 +56,7 @@
                     if(b < 0){
                         throw b + " is not positive.";
                     }
-                    var result = minus(a,b);
+                    var result = a - b;
                     if(result < 0){
                         throw "Result was not positive.";
                     }
@@ -95,14 +70,14 @@
                     if(b < 0){
                         throw b + " is not positive.";
                     }
-                    var result = times(a,b);
+                    var result = a * b;
                     if(result < 0){
                         throw "Result was not positive.";
                     }
                     return result;
                 };                
                 
-                /*************Assignment 1: refactory***************/
+                /*************refactoring***************/
                
                 
                 var positiveArithmetic = function(operator, a, b){
@@ -119,6 +94,18 @@
                     return result;                   
                 };
                 
+                var plus = function(a, b){
+                    return a + b;    
+                };
+                
+                var minus = function(a,b){
+                    return a - b; 
+                };
+                
+                var times = function(a,b){
+                    return a * b; 
+                };                  
+                
                 var positiveAdd_2 = function(a, b){
                     return positiveArithmetic(plus, a, b);    
                 };
@@ -131,7 +118,12 @@
                     return positiveArithmetic(times, a, b);    
                 };
                 
-                display(positiveAdd_2(2,-4));       
+                try{
+                    display(positiveAdd_2(2,-4)); 
+                }catch(err){
+                    display(err)
+                }
+                      
         
             });
             

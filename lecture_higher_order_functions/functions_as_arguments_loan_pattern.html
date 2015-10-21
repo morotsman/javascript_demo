@@ -39,15 +39,26 @@
                 
                 var myService = new Service();  
                 
-                var useResource = function () {
-                    var myResource = myService.openResource();
-                    display("I'm using " + myResource);
-                    myService.closeResource(myResource);
-                };
+                display("********** Example 1 ************");
+                var myResource = myService.openResource();
+                display("I'm using " + myResource);
+                myService.closeResource(myResource);
                 
-                useResource();
+                display("********** Example 2 ************");
+                try{
+                   var myResource = myService.openResource();
+                   display("I'm using " + myResource);
+                   throw("some error");
+                   myService.closeResource(myResource);                    
+                }catch(err){
+                    display("Uncaught error: " + err);
+                }
+               
+               
                 
-                /*******Refactory***************/
+               
+                
+                /*******Refactoring***************/
                 
                 function Service2(){
                     var openResource= function () {
@@ -61,16 +72,29 @@
                     
                     this.loanResource = function(callback){
                         var resource = openResource();
-                        callback(resource);
+                        try{
+                            callback(resource);
+                        }catch(err){
+                           display("Error: " + err);  
+                        } 
                         closeResource(resource);
                     };
                 };
                 
                 var myService2 = new Service2();
                 
+                display("********** Example 3 ************");
+                
                 myService2.loanResource(function(resource){
                     display("I'm using " + resource);    
                 });
+                
+                display("********** Example 4 ************");
+                
+                myService2.loanResource(function(resource){
+                    display("I'm using " + resource);
+                    throw("some error");
+                });                
 
 
             });

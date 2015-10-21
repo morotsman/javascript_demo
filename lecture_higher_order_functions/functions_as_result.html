@@ -31,6 +31,9 @@
 
 
 
+
+
+
                 /*Simple example, return a function*/
                 var add = function (a, b) {
                     return a + b;
@@ -46,38 +49,95 @@
                 display(add3);//print the code for the function
                 display("3+5=8: " + (add3(5) === 8));//prints true
 
-   
-        
-        
-        
-        
-                /**Example partial*/
+
+
+
+
+
+
+
+
+
+
+
+
+                /* Better way*/
+                var add3_partial = util.partial(add)(3)//more general
+                display(add3_partial);//print the code for the function
+                display("3+5=8: " + (add3_partial(5) === 8));//prints true
+
+                /**Another example partial of partial*/
                 var equal = function (a, b) {
                     return a === b;
                 };
 
                 var isSeven = util.partial(equal)(7);
 
-                display("7=7: " +isSeven(7));//prints true
+                display("7=7: " + isSeven(7));//prints true
                 display("6=7: " + isSeven(6));// prints false
 
 
-  
-        
-        
-        
+
+
+
+
+
+
+
+
+
+
+
                 /*Example compose*/
-                display("3+4=7: " +util.compose(isSeven, add3)(4));//prints true
+                display("3+4=7: " + util.compose(isSeven, add3)(4));//prints true
 
 
-        
-        
-        
-        
+
+
+
+
+
+
+
+
+
+
                 /*Example andThen*/
                 display("3+4=7: " + util.andThen(add3, isSeven)(4));
                 var isTen = util.partial(equal)(10);
                 display("4+3+3=10: " + util.andThen(util.andThen(add3, add3), isTen)(4));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                /*Example chain*/
+                display("chain");
+                var threePlusNumberIsSeven = util.chain(add3, isSeven, display);
+                threePlusNumberIsSeven(4);//true
+                threePlusNumberIsSeven(3);//false
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -104,6 +164,22 @@
 
                 ourColorDisplay2("blue", "test2");
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 //Example partial: adapting to interface, think of better example!!!!
                 var times = function (a, b) {
                     return a * b;
@@ -119,10 +195,52 @@
                 display(result1);
                 display(result2);
 
+
+
+
+
+
+
+
+
+
+                //memoized && timer
+                function fibonacci(n) {
+                    var f = [];
+                    for (var c = 0; c < n; ++c) {
+                        f.push((c < 2) ? c : f[c - 1] + f[c - 2]);
+                    }
+                    return f[n - 1];
+                }
+
                 
 
-              //policy example?
-            
+                var iterator = function (limit, fun) {
+                    for (var i = 0; i < limit; i++) {
+                        fun(i);
+                    }
+                }
+
+                var timmedIterator = util.timmedFunction(iterator);
+
+                timmedIterator(20000, fibonacci);
+
+
+                var memoizedFibonacci = util.memoized(fibonacci);
+
+                display("memoized");
+
+                timmedIterator(20000, memoizedFibonacci);
+                timmedIterator(20000, memoizedFibonacci);
+                //timmedIterator(20000, util.andThen(memoizedFibonacci,display));
+
+                
+
+
+
+
+
+
 
 
             });
