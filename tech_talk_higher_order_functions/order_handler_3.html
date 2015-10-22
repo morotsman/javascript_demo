@@ -74,13 +74,9 @@
                     };
                 };     
 
-                var internalOrder = function (order) {
-                    return orderProcess(noCreditCheckStrategy)(order);
-                };
+                var internalOrder = orderProcess(noCreditCheckStrategy);
 
-                var externalOrder = function (order) {
-                    return orderProcess(creditCheckStrategy)(order);
-                };
+                var externalOrder = orderProcess(creditCheckStrategy);
 
 
 
