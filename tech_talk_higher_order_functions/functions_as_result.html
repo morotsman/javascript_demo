@@ -19,7 +19,7 @@
 
         <script src="external/jquery.min.js"></script>
         <script src="util.js"></script>
-        <script src="services.js"></script>
+
 
         <script>
             $(window).load(function () {
@@ -215,24 +215,24 @@
 
                 
 
-                var iterator = function (limit, fun) {
+                var repeater = function (fun, limit) {
                     for (var i = 0; i < limit; i++) {
-                        fun(i);
+                        fun(i,3);
                     }
                 }
 
-                var timmedIterator = util.timmedFunction(iterator);
+                var timedRepeater = util.timmedFunction(repeater);
 
-                timmedIterator(20000, fibonacci);
+                timedRepeater(fibonacci, 20000);
 
 
                 var memoizedFibonacci = util.memoized(fibonacci);
 
                 display("memoized");
 
-                timmedIterator(20000, memoizedFibonacci);
-                timmedIterator(20000, memoizedFibonacci);
-                //timmedIterator(20000, util.andThen(memoizedFibonacci,display));
+                timedRepeater(memoizedFibonacci, 20000);
+                timedRepeater(memoizedFibonacci, 20000);
+                //timmedIterator(util.andThen(memoizedFibonacci,display),20000);
 
                 
 

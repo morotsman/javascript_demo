@@ -1,0 +1,149 @@
+<!doctype html>
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+
+    </head>
+
+
+    <body>
+        <div id="logger"> 
+        </div>
+
+
+
+
+
+        <script src="external/jquery.min.js"></script>
+        <script src="services.js"></script>
+        <script>
+            $(window).load(function () {
+
+                var display = function (text) {
+                    $("#logger").append("<p>" + text + "</p>");
+                };
+
+                var errorDisplay = function (text) {
+                    $("#logger").append("<p style='color:red'>" + text + "</p>");
+                };
+
+
+
+                //the business logic is drowning in error handling logic, we are violating the SRP.
+                //could we handle error logic in separate function?
+                var internalOrder = function (order) {
+                    var bookResult;
+                    var confirmation;
+                    try {
+                        bookResult = orderService.book(order.numberOfItems);
+                    } catch (err) {
+                        errorDisplay(err);
+                        return {
+                            message: "booking failed."
+                        };                        
+                    }
+                    if (bookResult.result === false) {
+                        return bookResult;
+                    }
+
+                    try {
+                        confirmation = orderService.finalize(bookResult.id);
+                    } catch (err) {
+                        errorDisplay(err);
+                        return {
+                            message: "finalize failed."
+                        };                        
+                    }
+
+                    return confirmation;
+                };
+
+                //display(internalOrder(order).message);
+
+                var externalOrder = function (order) {
+                    var bookResult;
+                    var confirmation;
+                    try {
+                        bookResult = orderService.book(order.numberOfItems);
+                    } catch (err) {
+                        errorDisplay(err);
+                        return {
+                            message: "booking failed."
+                        };
+                    }
+                    if (bookResult.result === false) {
+                        return bookResult;
+                    }
+                    var creditResult = orderService.isCreditOk(order.name);
+                    if (creditResult.result === false) {
+                        return creditResult;
+                    }
+                    try {
+                        confirmation = orderService.finalize(bookResult.id, order.name);
+                    } catch (err) {
+                        errorDisplay(err);
+                        return {
+                            message: "finalize failed."
+                        };
+                    }
+                    return confirmation;
+                };
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                /*test*/
+                
+                var order1 = {
+                    numberOfItems: 5,
+                    name: "Niklas"
+                };
+                
+                var order2 = {
+                    numberOfItems: 51,
+                    name: "Niklas"
+                };    
+                
+                var order3 = {
+                    numberOfItems: 510,
+                    name: "Niklas"
+                };     
+                
+                var order4 = {
+                    numberOfItems: 5,
+                    name: "SomeOtherPerson"
+                };                 
+
+
+                display("order1: " + externalOrder(order1).message);
+                display("order2: " + externalOrder(order2).message);
+                display("order3: " + externalOrder(order3).message);
+                display("order4: " + externalOrder(order4).message);
+                
+                display("******  internal ******");
+                display("order1: " + internalOrder(order1).message);
+                display("order2: " + internalOrder(order2).message);
+                display("order3: " + internalOrder(order3).message);
+                display("order4: " + internalOrder(order4).message);                
+
+
+            });
+            
+        </script>
+
+
+
+
+
+    </body>
+</html>
+
+

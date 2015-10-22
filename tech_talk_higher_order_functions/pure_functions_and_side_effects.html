@@ -22,18 +22,31 @@
         <script>
             $(window).load(function () {
 
-                //function with side effect
+                //function with side effect, hard to reuse
                 var addAndDisplay = function (a, b) {
                     var sum = a + b;
                     $("#logger").append("<p>" + sum + "</p>");
                 };
 
                 addAndDisplay(2, 2);
+                
+                
+                
+                
+                
+                
 
                 //pure function
                 var add = function (a, b) {
                     return a + b;
                 };
+                
+                
+                
+                
+                
+                
+                
 
                 //function with side effect
                 var display = function (text) {

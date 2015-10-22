@@ -30,7 +30,6 @@
                     $("#logger").append("<p style='color:red'>" + text + "</p>");
                 };
                 
-                //decorator pattern in combination with strategy pattern on functional level.
                 var errorHandler = function (fun, errorStrategy) {
                     return function (/*arguments*/) {
                         try {
@@ -40,22 +39,26 @@
                         }
                     };
                 };
-
-                var displayAndThrowStrategy = function (err) {
-                    errorDisplay(err);
-                    throw err;
-                };
-
+                
                 var statusStrategy = function (message) {
                     return function (err) {
                         return {result: false, message: message + " due to: " + err};
                     };
-                };
-
-                //var myBook = errorHandler(service.book, displayAndThrowStrategy);
-                //var myFinalize = errorHandler(service.finalize, displayAndThrowStrategy);
+                };                
+                
                 var myBook = errorHandler(orderService.book, statusStrategy("Could not book "));
-                var myFinalize = errorHandler(orderService.finalize, statusStrategy("Could not finalize "));
+                var myFinalize = errorHandler(orderService.finalize, statusStrategy("Could not finalize ")); 
+                
+                
+                
+                /*business logic*/
+                var noCreditCheckStrategy = function () {
+                    return {result: true};
+                };
+                
+                var creditCheckStrategy = function (order) {
+                    return orderService.isCreditOk(order.name);
+                };                 
 
                 var orderProcess = function (creditStrategy) {
                     return function (order) {
@@ -69,34 +72,70 @@
                         }
                         return myFinalize(bookResult.id);
                     };
-                };
-
-                var noCreditCheckStrategy = function () {
-                    return {result: true};
-                };
+                };     
 
                 var internalOrder = function (order) {
                     return orderProcess(noCreditCheckStrategy)(order);
-                };
-
-                var creditCheckStrategy = function (order) {
-                    return orderService.isCreditOk(order.name);
                 };
 
                 var externalOrder = function (order) {
                     return orderProcess(creditCheckStrategy)(order);
                 };
 
-                var order = {
-                    numberOfItems: 50,
-                    name: "Jens"
-                };
 
-                display(internalOrder(order).message);
-                display(externalOrder(order).message);
+
+
+
+
+
+
+
+
+
+
+
+
+                /*test*/
+
+
+                var order1 = {
+                    numberOfItems: 5,
+                    name: "Niklas"
+                };
+                
+                var order2 = {
+                    numberOfItems: 51,
+                    name: "Niklas"
+                };    
+                
+                var order3 = {
+                    numberOfItems: 510,
+                    name: "Niklas"
+                };     
+                
+                var order4 = {
+                    numberOfItems: 5,
+                    name: "SomeOtherPerson"
+                };                 
+
+              
+              
+                display("order1: " + externalOrder(order1).message);
+                display("order2: " + externalOrder(order2).message);
+                display("order3: " + externalOrder(order3).message);
+                display("order4: " + externalOrder(order4).message);
+                
+                display("******  internal ******");
+                display("order1: " + internalOrder(order1).message);
+                display("order2: " + internalOrder(order2).message);
+                display("order3: " + internalOrder(order3).message);
+                display("order4: " + internalOrder(order4).message);               
+                
+
+            
 
             });
-
+            
         </script>
 
 

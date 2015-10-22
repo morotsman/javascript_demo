@@ -1,0 +1,142 @@
+<!doctype html>
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+
+    </head>
+
+
+    <body>
+        <div id="logger"> 
+        </div>
+
+
+
+
+
+        <script src="external/jquery.min.js"></script>
+        <script src="services.js"></script>
+        <script>
+            $(window).load(function () {
+
+                var display = function (text) {
+                    $("#logger").append("<p>" + text + "</p>");
+                };
+
+                var errorDisplay = function (text) {
+                    $("#logger").append("<p style='color:red'>" + text + "</p>");
+                };
+
+
+
+
+
+                /********************************First refactory*******************************************/
+
+                //decorator pattern in combination with strategy pattern on functional level.
+                var errorHandler = function (fun, errorStrategy) {
+                    return function (/*arguments*/) {
+                        try {
+                            return fun.apply(this, arguments);
+                        } catch (err) {
+                            return errorStrategy(err);
+                        }
+                    };
+                };
+
+                var statusStrategy = function (message) {
+                    return function (err) {
+                        return {result: false, message: message + " due to: " + err};
+                    };
+                };
+
+                var myBook = errorHandler(orderService.book, statusStrategy("Could not book "));
+                var myFinalize = errorHandler(orderService.finalize, statusStrategy("Could not finalize "));
+
+                var internalOrder = function (order) {
+                    var bookResult = myBook(order.numberOfItems);
+                    if (bookResult.result === false) {
+                        return bookResult;
+                    }
+                    return myFinalize(bookResult.id);
+                };
+
+
+                //display(internalOrder_2(order).message);
+
+                var externalOrder = function (order) {
+                    var bookResult = myBook(order.numberOfItems);
+                    if (bookResult.result === false) {
+                        return bookResult;
+                    }
+                    var creditResult = orderService.isCreditOk(order.name);
+                    if (creditResult.result === false) {
+                        return creditResult;
+                    }
+                    return myFinalize(bookResult.id);
+
+                };
+
+
+                
+                
+                
+                
+                
+                
+                
+                
+                /*test*/
+
+
+                var order1 = {
+                    numberOfItems: 5,
+                    name: "Niklas"
+                };
+                
+                var order2 = {
+                    numberOfItems: 51,
+                    name: "Niklas"
+                };    
+                
+                var order3 = {
+                    numberOfItems: 510,
+                    name: "Niklas"
+                };     
+                
+                var order4 = {
+                    numberOfItems: 5,
+                    name: "SomeOtherPerson"
+                };                 
+
+              
+              
+                display("order1: " + externalOrder(order1).message);
+                display("order2: " + externalOrder(order2).message);
+                display("order3: " + externalOrder(order3).message);
+                display("order4: " + externalOrder(order4).message);
+                
+                display("******  internal ******");
+                display("order1: " + internalOrder(order1).message);
+                display("order2: " + internalOrder(order2).message);
+                display("order3: " + internalOrder(order3).message);
+                display("order4: " + internalOrder(order4).message);               
+                
+
+               
+
+            });
+            
+        </script>
+
+
+
+
+
+    </body>
+</html>
+
+

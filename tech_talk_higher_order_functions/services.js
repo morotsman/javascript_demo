@@ -1,6 +1,8 @@
 /*
  * Service represents a legacy component, only to look at it will generate weeks of regresion tests. 
  */
+var id = 0;
+
 var orderService = {
     book: function (numberOfItems) {
         if (numberOfItems > 100) {//whoa, more then 100 items, better crash the application!!!
@@ -9,10 +11,10 @@ var orderService = {
         if (numberOfItems > 50) { //We never have more then 50 items anyway
             return {result: false, message: "Sorry, could not book that many items"};
         }
-        var id = Math.floor(Math.random() * 100) + 1;
+        
         return{
             result: true,
-            id: id,
+            id: id++,
             message: numberOfItems + " items has been booked. The order id is: " + id
         };
     },
